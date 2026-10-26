@@ -1,0 +1,9 @@
+# Environment variables
+.env
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Session / Temp files
+*.log
