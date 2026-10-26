@@ -29,7 +29,7 @@ try {
 
     $pdo = Database::getConnection();
 
-    $schemaFile = __DIR__ . '/../../schema_mysql.sql';
+    $schemaFile = __DIR__ . '/../schema_mysql.sql';
     if (!file_exists($schemaFile)) {
         throw new Exception("schema_mysql.sql not found at: $schemaFile");
     }
