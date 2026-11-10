@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scriptorium – The New Canvas for Creative Voices</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/avatar.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/gallery.css">
+  <script type="importmap">{"imports":{"@humation/core":"./vendor/humation/core/index.js","@humation/assets-humation-1":"./vendor/humation/assets-humation-1/index.js","@humation/web-component":"./vendor/humation/web-component/index.js"}}</script>
+</head>
+<body>
+
+  <!-- Navigation bar -->
+  <header id="siteHeader"></header>
+
+  <main id="home">
+
+    <!-- Hero section background -->
+    <section class="hero" aria-label="Scriptorium">
+      <video class="hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+        <source src="videos/scriptorium-background.mp4" type="video/mp4">
+      </video>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 class="hero-slogan">There is no must in art<br>because art is free</h1>
+        <p class="hero-quote">— Wassily Kandinsky —</p>
+        <div class="hero-buttons">
+          <a href="gallery.html" class="glass-btn glass-accent">Explore the Gallery</a>
+          <a href="#stories" class="glass-btn">Main showcase</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Introduction section -->
+    <section class="intro" id="explore">
+      <h2>The New Canvas for Creative Voices</h2>
+      <p class="tagline">Arts, Words and Community</p>
+
+      <div class="features">
+        <a class="feature" href="gallery.html">
+          <div class="circle"><img src="images/features/gallery.png" alt="Artist painting on an easel"></div>
+          <h3>Gallery</h3>
+          <p>Explore a growing gallery of artwork and creative visuals from our community.</p>
+        </a>
+        <a class="feature" href="gallery.html#poems">
+          <div class="circle"><img src="images/features/chapbook.png" alt="Writer composing a poem"></div>
+          <h3>E-Chapbook</h3>
+          <p>Read and share short digital chapbooks of poems.</p>
+        </a>
+        <a class="feature" href="gallery.html?cat=photography">
+          <div class="circle"><img src="images/features/photography.png" alt="Photographer with a camera"></div>
+          <h3>Photography</h3>
+          <p>Moments captured through the lenses of our community, from city streets to quiet landscapes.</p>
+        </a>
+        <a class="feature" href="gallery.html?cat=artcraft">
+          <div class="circle"><img src="images/features/artcraft.png" alt="Craftsperson painting a clay pot"></div>
+          <h3>Artcraft</h3>
+          <p>Handmade crafts, from pottery to paper art, shaped by the hands of our community.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Gallery section -->
+    <section class="gallery" id="gallery">
+      <h2>Our Gallery</h2>
+      <div class="carousel" id="carousel">
+        <button class="car-btn prev" id="prevBtn" aria-label="Previous">&#8249;</button>
+        <div class="car-track" id="carTrack"></div>
+        <button class="car-btn next" id="nextBtn" aria-label="Next">&#8250;</button>
+      </div>
+      <div class="dots" id="dots"></div>
+    </section>
+
+    <!-- Poems -->
+    <section class="stories" id="stories">
+      <h2>Poems</h2>
+      <div class="cards" id="cards"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" id="about">
+    <div class="footer-brand">SCRIPTORIUM</div>
+
+    <div class="footer-nav">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="gallery.html#explore">Explore</a></li>
+        <li><a href="#about">About Us</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-sub">
+      <h4>Subscribe Scriptorium</h4>
+      <p>Subscribe SCRIPTORIUM to get updates about new books and stories.</p>
+      <form id="subscribeForm" novalidate>
+        <input type="email" id="subEmail" placeholder="Email Address" aria-label="Email address">
+        <small id="subMsg" role="status"></small>
+      </form>
+    </div>
+  </footer>
+
+  <script type="module" src="js/pages/home.js"></script>
+</body>
+</html>
