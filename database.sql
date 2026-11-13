@@ -1,11 +1,6 @@
--- Scriptorium Database Schema
--- Character set: UTF-8 (utf8mb4)
--- Day 1 Commit: Core Table DDL & Relationships
-
 CREATE DATABASE IF NOT EXISTS `scriptorium` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `scriptorium`;
 
--- 1. Users Table
 CREATE TABLE IF NOT EXISTS `users` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `full_name` VARCHAR(150) NOT NULL,
@@ -25,7 +20,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   INDEX `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 2. Categories Table
 CREATE TABLE IF NOT EXISTS `categories` (
   `id` VARCHAR(50) NOT NULL PRIMARY KEY,
   `label` VARCHAR(100) NOT NULL,
@@ -34,7 +28,6 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `description` VARCHAR(255) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 3. Posts Table
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `author_id` VARCHAR(64) NOT NULL,
@@ -58,7 +51,6 @@ CREATE TABLE IF NOT EXISTS `posts` (
   CONSTRAINT `fk_posts_author` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 4. Events & Exhibitions Table
 CREATE TABLE IF NOT EXISTS `events` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `kind` ENUM('Exhibition', 'Event', 'Notice') NOT NULL DEFAULT 'Event',
@@ -71,7 +63,6 @@ CREATE TABLE IF NOT EXISTS `events` (
   INDEX `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 5. Event Registrations Table
 CREATE TABLE IF NOT EXISTS `event_registrations` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `event_id` VARCHAR(64) NOT NULL,
@@ -82,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `event_registrations` (
   CONSTRAINT `fk_reg_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 6. Social Likes Table
+
 CREATE TABLE IF NOT EXISTS `likes` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `post_id` VARCHAR(64) NOT NULL,
@@ -93,7 +84,6 @@ CREATE TABLE IF NOT EXISTS `likes` (
   CONSTRAINT `fk_likes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 7. Social Comments Table
 CREATE TABLE IF NOT EXISTS `comments` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `post_id` VARCHAR(64) NOT NULL,
@@ -105,7 +95,6 @@ CREATE TABLE IF NOT EXISTS `comments` (
   CONSTRAINT `fk_comments_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 8. Social Follows Table
 CREATE TABLE IF NOT EXISTS `follows` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `follower_id` VARCHAR(64) NOT NULL,
@@ -116,7 +105,6 @@ CREATE TABLE IF NOT EXISTS `follows` (
   CONSTRAINT `fk_follows_followee` FOREIGN KEY (`followee_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 9. Notifications Table
 CREATE TABLE IF NOT EXISTS `notifications` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `user_id` VARCHAR(64) NOT NULL,
@@ -130,7 +118,6 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   CONSTRAINT `fk_notes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 10. Activity Logs Table
 CREATE TABLE IF NOT EXISTS `activity_logs` (
   `log_date` DATE NOT NULL PRIMARY KEY,
   `view_count` INT NOT NULL DEFAULT 0,
