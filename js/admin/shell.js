@@ -23,7 +23,7 @@ export function renderShell(app, ctx, { onSearch }) {
   app.innerHTML = `
   <aside class="sidebar" id="sidebar">
     <a href="index.html" class="brand">${LOGO}<span>Scriptorium</span></a>
-    <nav class="side-nev">
+    <nav class="side-nav">
       <a href="#home" data-nav="home">${I.home}<span>Home</span></a>
       <div class="nav-group" data-group="queue">
         <a href="#queue/pending" data-nav="queue" class="group-head">${I.queue}<span>Approval Queue</span><em class="badge-count" id="pendingBadge" hidden></em><i class="chev">${I.chev}</i></a>
