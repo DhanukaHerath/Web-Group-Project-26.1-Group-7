@@ -14,8 +14,16 @@
         <link rel="stylesheet" href="css/auth.css">
         <link rel="stylesheet" href="css/dashboard.css">
         <link rel="stylesheet" href="css/admin.css">
+
+        <script type="importmap">
+            {"imports":{"@humation/core":"./vendor/humation/core/index.js","@humation/assets-humation-1":"./vendor/humation/assets-humation-1/index.js","@humation/web-component":"./vendor/humation/web-component/index.js"}}
+        </script>
+        
+        <script src="vendor/chartjs/chart.umd.js"></script>
+        <!-- Chart.js (https://www.chartjs.org) – vendored locally -->
     </head>
     <body class="dash admin">
         <div id="app"></div>
+        <script type="module" src="js/pages/admin.js"></script>
     </body>
 </html>
