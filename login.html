@@ -10,11 +10,18 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="css/auth.css">
 </head>
-< class="auth-page">
+<body class="auth-page">
   <!-- same video as the landing page, blurred behind the glass card -->
   <video class="auth-video" autoplay muted loop playsinline aria-hidden="true">
     <source src="videos/scriptorium-background.mp4" type="video/mp4">
   </video>
+  <div class="auth-dim"></div>
+
+  <main class="auth-modal" role="dialog" aria-labelledby="authTitle">
+    <header class="auth-modal-head">
+      <span class="auth-brand">Scriptorium</span>
+      <a href="index.html" class="auth-close" aria-label="Close">&#10005;</a>
+    </header>
 
   <section class="auth-card">
   <!-- LOGIN -->
