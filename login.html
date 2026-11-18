@@ -10,15 +10,35 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="css/auth.css">
 </head>
-<body class="auth-page">
+< class="auth-page">
   <!-- same video as the landing page, blurred behind the glass card -->
   <video class="auth-video" autoplay muted loop playsinline aria-hidden="true">
     <source src="videos/scriptorium-background.mp4" type="video/mp4">
   </video>
 
+  <section class="auth-card">
+  <!-- LOGIN -->
+      <form id="loginForm" novalidate>
+        <h1 id="authTitle">Login</h1>
+        <label>Email
+          <input type="email" name="email" placeholder="name@example.com" autocomplete="email" required>
+        </label>
+        <label>Password
+          <span class="pw-wrap">
+            <input type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+            <button type="button" class="pw-toggle" aria-label="Show password" data-action="toggle-pw">&#128065;</button>
+          </span>
+        </label>
+        <a href="#" class="forgot" data-action="forgot">Forgot Password?</a>
+        <p class="form-error" role="alert"></p>
+        <button type="submit" class="auth-submit">Sign in</button>
+        <p class="auth-switch">Don't have an account? <a href="#" data-switch="register">Register</a></p>
+      </form>
 
+    </section>
 
 </body>
+  
 
 
 </html>
