@@ -42,10 +42,44 @@
         <p class="auth-switch">Don't have an account? <a href="#" data-switch="register">Register</a></p>
       </form>
 
-    </section>
+      <!-- REGISTER -->
+      <form id="registerForm" novalidate hidden>
+        <h1>Register</h1>
+        <div class="row">
+          <label>Full Name
+            <input type="text" name="fullName" placeholder="Alex Perera" autocomplete="name" required>
+          </label>
+          <label>Username
+            <input type="text" name="username" placeholder="alex_art" autocomplete="username" required>
+          </label>
+        </div>
+        <label>Email
+          <input type="email" name="email" placeholder="name@example.com" autocomplete="email" required>
+        </label>
+        <div class="row">
+          <label>Faculty
+            <select name="faculty" id="facultySelect" required></select>
+          </label>
+          <label>Batch
+            <select name="batch" id="batchSelect" required></select>
+          </label>
+        </div>
+        <label>Password
+          <span class="pw-wrap">
+            <input type="password" name="password" placeholder="Minimum 6 characters" autocomplete="new-password" required minlength="6">
+            <button type="button" class="pw-toggle" aria-label="Show password" data-action="toggle-pw">&#128065;</button>
+          </span>
+        </label>
+        <label>Confirm Password
+          <input type="password" name="confirmPassword" placeholder="Re-enter password" autocomplete="new-password" required>
+        </label>
+        <p class="form-error" role="alert"></p>
+        <button type="submit" class="auth-submit">Create Account</button>
+        <p class="auth-switch">Already have an account? <a href="#" data-switch="login">Log In</a></p>
+      </form>
+  </section>
+  </main>
 
+ 
 </body>
-  
-
-
 </html>
