@@ -1,3 +1,8 @@
+import {logout} from '../core/auth.js';
+import {avatarHTML} from '../humation/avatar-view.js';
+import {postsByStatus} from '../core/posts.js';
+import {esc, timeAgo} from '../core/dom.js';
+
 const I = {
     home: '<svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>',
     queue: '<svg viewBox="0 0 24 24"><path d="M3 4h18v4H3zM4 9h16v11H4zm5 3v2h6v-2z"/></svg>',
@@ -165,6 +170,10 @@ export function renderShell(app, ctx, { onSearch }) {
             const [title, search] = TITLES[route] || TITLES.home;
             $('#topTitle').textContent = title;
             $('#searchBox').style.visibility = search ? '' : 'hidden';
-        }
+        },
+        clearSearch() {
+            $('#searchInput').value = '';
+        },
+        refreshBell,
     };
 }
