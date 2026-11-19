@@ -12,4 +12,12 @@ if (user) {
             route();
         }
     });
+
+    function currentRoute() {
+        let r = location.hash.slice(1) || 'home';
+        if (r === 'queue') {
+            r = 'queue/pending';
+        }
+        return r in TITLES ? r : 'home';
+    }
 }
