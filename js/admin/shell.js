@@ -125,4 +125,22 @@ export function renderShell(app, ctx, { onSearch }) {
         }
         closePops();
     });
+
+    document.addEventListener(
+        'keydown', e => {
+            if (e.key === 'Escape') closePops();
+        }
+    );
+
+    let t;
+    $('#searchInput').addEventListener(
+        'input', e => {
+            clearTimeout(t);
+            t = setTimeout(
+                () => onSearch(
+                    e.target.value.trim()
+                ), 200
+            )
+        }
+    );
 }
