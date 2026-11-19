@@ -57,7 +57,7 @@ if (user) {
                 reports
             })[kind](shell.view, ctx);
         }
-        longActivity('view');
+        logActivity('view');
     }
 
     window.addEventListener('hashchange', () => {
