@@ -98,19 +98,30 @@ export function renderShell(app, ctx, { onSearch }) {
     app.adEventListener('click', e => {
         const act = e.target.closeet('[data-action]')?.dataset.action;
         if (act == 'logout') {
-            
+            e.preventDefault();
+            logout();
+            location.href = 'index.html';
+            return;
         }
         if (act == 'open-drawer') {
-
+            document.body.classList.add('drawer-open');
+            return;
         }
-        if (act == 'close-drawer') {
-
+        if (act == 'close-drawer' || e.target.closet('.side-nav a')) {
+            document.body.classList.remove('drawer-open');
         }
         if (act == 'user-menu') {
-
+            const m = $('#user-menu'), was = m.hidden;
+            closePops();
+            m.hidden = !was;
+            return;
         }
         if (act == 'bell') {
-
+            refreshBell();
+            const m = $('#bellPop'), was = m.hidden;
+            closePops();
+            m.hidden = !was;
+            return;
         }
         closePops();
     });
