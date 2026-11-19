@@ -143,4 +143,28 @@ export function renderShell(app, ctx, { onSearch }) {
             )
         }
     );
+
+    return {
+        view: $('#view'),
+        setActive(route) {
+            const base = route.split('/')[0];
+            app.querySelectorAll('[data-nav]').forEach(
+                a => a.classList.toggle(
+                    'active', a.dataset.nav === base
+                )
+            );
+            app.querySelectorAll('[data-sub]').forEach(
+                a => a.classList.toggle(
+                    'active', a.dataset.sub === route
+                )
+            )
+            $('.nav-group').classList.toggle(
+                'open', base === 'queue'
+            );
+
+            const [title, search] = TITLES[route] || TITLES.home;
+            $('#topTitle').textContent = title;
+            $('#searchBox').style.visibility = search ? '' : 'hidden';
+        }
+    };
 }
