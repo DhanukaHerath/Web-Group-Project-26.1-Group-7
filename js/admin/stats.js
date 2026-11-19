@@ -1,3 +1,5 @@
+/* stats.js – numbers and time series for the admin home page and reports. */
+
 import { allUsers, effectiveStatus } from '../core/auth.js';
 import { allPosts } from '../core/posts.js';
 import { allRegistrations } from '../core/events.js';
@@ -16,6 +18,7 @@ const countByDay = (items, keys) => keys.map(
 );
 export const sum = a => a.reduce((x, y) => x + y, 0);
 
+/** Daily series for the last `n` days (shifted back by `offset` days). */
 export function series(n, offset = 0) {
     const keys = keysFor(n, offset), act = activityByDay(), g = (k, t) => act[k]?.[t] || 0;
     const posts = countByDay(
@@ -73,6 +76,7 @@ export function series(n, offset = 0) {
     };
 }
 
+/** % change of `now` vs `before` (null when there is nothing to compare). */
 export const delta = (now, before) => (
     before ? Math.round(
         ((now - before) / before) * 100
