@@ -20,4 +20,33 @@ if (user) {
         }
         return r in TITLES ? r : 'home';
     }
+
+    let last = null;
+    function route() {
+        const r = currentRoute();
+        if (r !== last) {
+            ctx.query = '';
+            shell.clearSearch();
+            last = r;
+        }
+        shell.setActive(r);
+        const refresh = () => {
+            shell.refreshBell();
+            route();
+        };
+        ctx.refresh = refresh;
+        const [kind, status] = r.split('/');
+        if (kind === 'queue') {
+            queue(shell.view, ctx, status);
+        } else {
+            ({ home,
+                categories,
+                featured,
+                users,
+                events,
+                reports
+            })[kind](shell.view, ctx);
+        }
+        longActivity('view');
+    }
 }
