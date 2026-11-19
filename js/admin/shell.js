@@ -1,3 +1,9 @@
+/* admin shell.js – admin frame: sidebar (with Approval Queue sub-menu), top bar, bell, user menu. */
+import { logout } from '../core/auth.js';
+import { avatarHTML } from '../humation/avatar-view.js';
+import { postsByStatus } from '../core/posts.js';
+import { esc, timeAgo } from '../core/dom.js';
+
 const I = {
     home: '<svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>',
     queue: '<svg viewBox="0 0 24 24"><path d="M3 4h18v4H3zM4 9h16v11H4zm5 3v2h6v-2z"/></svg>',
@@ -13,64 +19,170 @@ const I = {
 };
 const LOGO = `<svg viewBox="0 0 72 72" class="brand-mark" aria-hidden="true"><rect width="72" height="72" rx="20" fill="#25356b"/><path d="M38 14c14 4 10 14 0 18 8 2 6 12-4 26" fill="none" stroke="#e8a13a" stroke-width="4" stroke-linecap="round"/><circle cx="40" cy="14" r="3" fill="#fff"/></svg>`;
 
+/* route ids → heading / whether the top search box applies */
 export const TITLES = {
-    home: ['Content Overview', true], 'queue/pending': ['Approval Queue', true], 'queue/approved': ['Approved Posts', true], 'queue/disapproved': ['Disapproved Posts', true],
-    categories: ['Storehouse', true], featured: ['Featured Artworks', true], users: ['User Management', false], events: ['Events & Exhibitions', true], reports: ['Reports', false],
+    home: ['Content Overview', true],
+    'queue/pending': ['Approval Queue', true],
+    'queue/approved': ['Approved Posts', true],
+    'queue/disapproved': ['Disapproved Posts', true],
+    categories: ['Storehouse', true],
+    featured: ['Featured Artworks', true],
+    users: ['User Management', false],
+    events: ['Events & Exhibitions', true],
+    reports: ['Reports', false],
 };
 
 export function renderShell(app, ctx, { onSearch }) {
-  const { user } = ctx;
-  app.innerHTML = `
-  <aside class="sidebar" id="sidebar">
-    <a href="index.html" class="brand">${LOGO}<span>Scriptorium</span></a>
-    <nav class="side-nav">
-      <a href="#home" data-nav="home">${I.home}<span>Home</span></a>
-      <div class="nav-group" data-group="queue">
-        <a href="#queue/pending" data-nav="queue" class="group-head">${I.queue}<span>Approval Queue</span><em class="badge-count" id="pendingBadge" hidden></em><i class="chev">${I.chev}</i></a>
-        <div class="sub-nav">
-          <a href="#queue/approved" data-sub="queue/approved">Approved</a>
-          <a href="#queue/disapproved" data-sub="queue/disapproved">Disapproved</a>
-          <a href="#queue/pending" data-sub="queue/pending">Pending</a>
+    const { user } = ctx;
+    app.innerHTML = `
+    <aside class="sidebar" id="sidebar">
+        <a href="index.html" class="brand">${LOGO}<span>Scriptorium</span></a>
+        <nav class="side-nav">
+            <a href="#home" data-nav="home">${I.home}<span>Home</span></a>
+            <div class="nav-group" data-group="queue">
+                <a href="#queue/pending" data-nav="queue" class="group-head">${I.queue}<span>Approval Queue</span><em class="badge-count" id="pendingBadge" hidden></em><i class="chev">${I.chev}</i></a>
+                <div class="sub-nav">
+                    <a href="#queue/approved" data-sub="queue/approved">Approved</a>
+                    <a href="#queue/disapproved" data-sub="queue/disapproved">Disapproved</a>
+                    <a href="#queue/pending" data-sub="queue/pending">Pending</a>
+                </div>
+            </div>
+            <a href="#categories" data-nav="categories">${I.cats}<span>Categories</span></a>
+            <a href="#featured" data-nav="featured">${I.star}<span>Featured</span></a>
+            <a href="#users" data-nav="users">${I.users}<span>Users</span></a>
+            <a href="#events" data-nav="events">${I.events}<span>Events</span></a>
+            <a href="#reports" data-nav="reports">${I.report}<span>Reports</span></a>
+        </nav>
+        <div class="side-bottom">
+            <div class="user-card-wrap">
+                <button type="button" class="side-btn user-card" data-action="user-menu" aria-haspopup="true">
+                    ${avatarHTML(user, { size: 30 })}
+                    <span class="uc-text"><b>${esc(user.fullName || user.username)}</b><small>${esc(user.email)}</small></span>
+                    <span class="dots" aria-hidden="true">⋮</span>
+                </button>
+                <div class="pop user-menu" id="userMenu" hidden>
+                    <a href="profile.html">My profile</a>
+                    <a href="profile-edit.html">Edit profile &amp; avatar</a>
+                    <a href="dashboard.html">Member dashboard</a>
+                    <a href="index.html">Landing page</a>
+                    <a href="#" data-action="logout">Log out</a>
+                </div>
+            </div>
         </div>
-      </div>
-      <a href="#categories" data-nav="categories">${I.cats}<span>Categories</span></a>
-      <a href="#featured" data-nav="featured">${I.star}<span>Featured</span></a>
-      <a href="#users" data-nav="users">${I.users}<span>Users</span></a>
-      <a href="#events" data-nav="events">${I.events}<span>Events</span></a>
-      <a href="#reports" data-nav="reports">${I.report}<span>Reports</span></a>
-    </nav>
-    <div class="side-bottom">
-      <div class="user-card-wrap">
-        <button type="button" class="side-btn user-card" data-action="user-menu" aria-haspopup="true">
-          ${avatarHTML(user, { size: 30 })}
-          <span class="uc-text"><b>${esc(user.fullName || user.username)}</b><small>${esc(user.email)}</small></span>
-          <span class="dots" aria-hidden="true">⋮</span>
-        </button>
-        <div class="pop user-menu" id="userMenu" hidden>
-          <a href="profile.html">My profile</a>
-          <a href="profile-edit.html">Edit profile &amp; avatar</a>
-          <a href="dashboard.html">Member dashboard</a>
-          <a href="index.html">Landing page</a>
-          <a href="#" data-action="logout">Log out</a>
-        </div>
-      </div>
-    </div>
-  </aside>
-  <div class="scrim" data-action="close-drawer"></div>
+    </aside>
+    <div class="scrim" data-action="close-drawer"></div>
 
-  <div class="main">
-    <header class="topbar">
-      <button type="button" class="icon-btn burger" data-action="open-drawer" aria-label="Open menu">${I.menu}</button>
-      <h1 class="top-title" id="topTitle">Content Overview</h1>
-      <label class="search" id="searchBox"><input type="search" id="searchInput" placeholder="Search anything here..." aria-label="Search">${I.search}</label>
-      <div class="top-right">
-        <div class="bell-wrap">
-          <button type="button" class="icon-btn" data-action="bell" aria-label="Notifications">${I.bell}<i class="dot" id="bellDot" hidden></i></button>
-          <div class="pop bell-pop" id="bellPop" hidden></div>
-        </div>
-        <a href="profile.html" class="top-avatar" aria-label="My profile">${avatarHTML(user, { size: 34 })}</a>
-      </div>
-    </header>
-    <main class="content" id="view" tabindex="-1"></main>
-  </div>`;
+    <div class="main">
+        <header class="topbar">
+            <button type="button" class="icon-btn burger" data-action="open-drawer" aria-label="Open menu">${I.menu}</button>
+            <h1 class="top-title" id="topTitle">Content Overview</h1>
+            <label class="search" id="searchBox">
+                <input type="search" id="searchInput" placeholder="Search anything here..." aria-label="Search">${I.search}
+            </label>
+            <div class="top-right">
+                <div class="bell-wrap">
+                    <button type="button" class="icon-btn" data-action="bell" aria-label="Notifications">
+                        ${I.bell}<i class="dot" id="bellDot" hidden></i>
+                    </button>
+                    <div class="pop bell-pop" id="bellPop" hidden></div>
+                </div>
+                <a href="profile.html" class="top-avatar" aria-label="My profile">${avatarHTML(user, { size: 34 })}</a>
+            </div>
+        </header>
+        <main class="content" id="view" tabindex="-1"></main>
+    </div>`;
+
+    const $ = s => app.querySelector(s);
+    const closePops = () => app.querySelectorAll('.pop').forEach(
+        p => (p.hidden = true)
+    );
+
+    /* bell + sidebar badge: posts waiting for review */
+    function refreshBell() {
+        const pending = postsByStatus('pending');
+        const badge = $('#pendingBadge');
+        badge.hidden = !pending.length;
+        badge.textContent = pending.length;
+        $('#bellDot').hidden = !pending.length;
+        $('#bellPop').innerHTML = '<h4>Waiting for review</h4>' +
+            (pending.length ? pending.slice(0, 5).map(
+                p => `<a href="#queue/pending"><b>${esc(p.title)}</b><small>by ${esc(p.authorName)} · ${timeAgo(p.createdAt)}</small></a>`
+            ).join('') +
+            (pending.length > 5 ? `<a href="#queue/pending"><small>+ ${pending.length - 5} more</small></a>` : '') : '<p class="muted">Nothing waiting. 🎉</p>');
+    }
+    refreshBell();
+
+    app.addEventListener('click', e => {
+        const act = e.target.closest('[data-action]')?.dataset.action;
+        if (act === 'logout') {
+            e.preventDefault();
+            logout();
+            location.href = 'index.html';
+            return;
+        }
+        if (act === 'open-drawer') {
+            document.body.classList.add('drawer-open');
+            return;
+        }
+        if (act === 'close-drawer' || e.target.closest('.side-nav a')) {
+            document.body.classList.remove('drawer-open');
+        }
+        if (act === 'user-menu') {
+            const m = $('#userMenu'), was = m.hidden;
+            closePops();
+            m.hidden = !was;
+            return;
+        }
+        if (act === 'bell') {
+            refreshBell();
+            const m = $('#bellPop'), was = m.hidden;
+            closePops();
+            m.hidden = !was;
+            return;
+        }
+        closePops();
+    });
+    document.addEventListener(
+        'keydown', e => {
+            if (e.key === 'Escape') closePops();
+        }
+    );
+
+    let t;
+    $('#searchInput').addEventListener(
+        'input', e => {
+            clearTimeout(t);
+            t = setTimeout(
+                () => onSearch(
+                    e.target.value.trim()
+                ),
+                200
+            );
+        }
+    );
+
+    return {
+        view: $('#view'),
+        setActive(route) {
+            const base = route.split('/')[0];
+            app.querySelectorAll('[data-nav]').forEach(
+                a => a.classList.toggle(
+                    'active', a.dataset.nav === base
+                )
+            );
+            app.querySelectorAll('[data-sub]').forEach(
+                a => a.classList.toggle(
+                    'active', a.dataset.sub === route
+                )
+            );
+            $('.nav-group').classList.toggle(
+                'open', base === 'queue'
+            );
+            const [title, search] = TITLES[route] || TITLES.home;
+            $('#topTitle').textContent = title;
+            $('#searchBox').style.visibility = search ? '' : 'hidden';
+        },
+        clearSearch() { $('#searchInput').value = ''; },
+        refreshBell,
+    };
 }
