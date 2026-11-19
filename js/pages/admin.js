@@ -49,4 +49,11 @@ if (user) {
         }
         longActivity('view');
     }
+
+    window.addEventListener('hashchange', () => {
+        closeModal();
+        window.scrollTo(0, 0);
+        route();
+    });
+    route();
 }
