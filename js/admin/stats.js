@@ -14,5 +14,14 @@ const countByDay = (items, keys) => keys.map(
         t => dayKey(t) === k
     ).length
 );
-
 export const sum = a => a.reduce((x,y) => x + y, 0);
+
+export function series() {}
+
+export const delta = (now, before) => (
+    before ? Math.round(
+        ((now - before) / before) * 100
+    ) : null
+);
+
+export function overview() {}
