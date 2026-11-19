@@ -123,3 +123,98 @@ if ($method === 'GET') {
 }
 
 errorResponse('Method not allowed.', 405);
+if ($method === 'POST') {
+    $user = requireAuth($pdo);
+
+    $title = '';
+    $category = '';
+    $description = '';
+    $text = '';
+    $imagePath = '';
+
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+    if (strpos($contentType, 'multipart/form-data') !== false) {
+        $title = trim($_POST['title'] ?? '');
+        $category = trim($_POST['category'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $text = trim($_POST['text'] ?? '');
+
+        if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['file'];
+            $maxBytes = 8 * 1024 * 1024;
+            if ($file['size'] > $maxBytes) {
+                errorResponse('Image size exceeds 8MB limit.');
+            }
+
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+
+            if (!in_array($mime, $allowedMimes)) {
+                errorResponse('Invalid image type. Only PNG, JPG, and WebP are allowed.');
+            }
+
+            $ext = ($mime === 'image/png') ? 'png' : (($mime === 'image/webp') ? 'webp' : 'jpg');
+            $filename = 'post_' . bin2hex(random_bytes(10)) . '.' . $ext;
+            
+            $uploadDir = dirname(__DIR__) . '/uploads';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $destPath = $uploadDir . '/' . $filename;
+            if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+                errorResponse('Failed to save uploaded image.');
+            }
+
+            $imagePath = 'uploads/' . $filename;
+        }
+    } else {
+        $body = getJsonBody();
+        $title = trim($body['title'] ?? '');
+        $category = trim($body['category'] ?? '');
+        $description = trim($body['description'] ?? '');
+        $text = trim($body['text'] ?? '');
+        $imagePath = trim($body['image'] ?? '');
+    }
+
+    if (!$title) errorResponse('Please provide a post title.');
+    if (!$category) errorResponse('Please select a category.');
+
+    $catStmt = $pdo->prepare("SELECT `type` FROM `categories` WHERE `id` = ? LIMIT 1");
+    $catStmt->execute([$category]);
+    $cat = $catStmt->fetch();
+    $isText = $cat && $cat['type'] === 'text';
+
+    if ($isText) {
+        if (strlen($text) < 10) errorResponse('Please write at least a few words for your literary piece.');
+    } else {
+        if (!$imagePath) errorResponse('Please upload an image.');
+        if (!$description) errorResponse('Please add a description for your artwork.');
+    }
+
+    $id = generateId('p_');
+    $now = nowMs();
+
+    $stmt = $pdo->prepare("INSERT INTO `posts`
+        (`id`, `author_id`, `author_name`, `category`, `title`, `description`, `text`, `image`, `created_at`, `status`, `featured`)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 0)");
+    $stmt->execute([$id, $user['id'], $user['username'], $category, $title, $description, $text, $imagePath, $now]);
+
+    logActivityRecord($pdo, 'post');
+
+    jsonResponse([
+        'message' => 'Post submitted for approval',
+        'post'    => [
+            'id' => $id,
+            'title' => $title,
+            'category' => $category,
+            'status' => 'pending',
+            'createdAt' => $now
+        ]
+    ], 201);
+}
+
+errorResponse('Method not allowed.', 405);
+
