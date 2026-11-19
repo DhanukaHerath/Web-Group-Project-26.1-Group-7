@@ -78,3 +78,49 @@ export const delta = (now, before) => (
         ((now - before) / before) * 100
     ) : null
 );
+
+export function overview() {
+    const users = allUsers(), posts = allPosts(), regs = allRegistrations(), now = Date.now();
+    const members = users.filter(
+        u => u.role !== 'admin'
+    );
+    const active = ms => members.filter(
+        u => u.lastActiveAt && now - u.lastActiveAt < ms
+    );
+    const registeredUsers = new Set(
+        regs.map(
+            r => r.userId
+        )
+    );
+    return {
+        users: users.length,
+        members: members.length,
+        admins: users.length - members.length,
+        active15m: active(15 * 60e3).length,
+        active24h: active(DAY).length,
+        active7d: active(7 * DAY).length,
+        suspended: users.filter(
+            u => effectiveStatus(u) === 'suspended'
+        ).length,
+        banned: users.filter(
+            u => effectiveStatus(u) === 'banned'
+        ).length,
+        posts: posts.length,
+        approved: posts.filter(
+            p => p.status === 'approved'
+        ).length,
+        pending: posts.filter(
+            p => p.status === 'pending'
+        ).length,
+        disapproved: posts.filter(
+            p => p.status === 'disapproved'
+        ).length,
+        featured: posts.filter(
+            p => p.featured && p.status === 'approved'
+        ).length,
+        registrations: regs.length,
+        registeredMembers: members.filter(
+            u => registeredUsers.has(u.id)
+        ).length,
+    };
+}
