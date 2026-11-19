@@ -1,5 +1,3 @@
-/* gallery.js – public gallery page: Gallery (images), Poems (text) and Explore (by category / artist).
-   Guests can browse; liking, commenting and following need a login (handled in the post detail). */
 import { initNav } from '../components/nav.js';
 import { currentUser } from '../core/auth.js';
 import { publicPosts, getCategories, authorOf, displayName, isRealMember } from '../core/posts.js';
@@ -12,9 +10,9 @@ import { esc, toast } from '../core/dom.js';
 
 initNav(); logActivity('view');
 const view = document.getElementById('galView');
-const st = { cat: 'all', artist: null, sort: 'new', q: '', mode: 'category' };   // shared filter state
+const st = { cat: 'all', artist: null, sort: 'new', q: '', mode: 'category' };   
 const TABS = ['gallery', 'poems', 'explore'];
-const startCat = new URLSearchParams(location.search).get('cat');   // e.g. gallery.html?cat=photography
+const startCat = new URLSearchParams(location.search).get('cat');  
 if (startCat) st.cat = startCat;
 const tab = () => (TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'gallery');
 
@@ -22,7 +20,6 @@ const isText = p => getCategories().find(c => c.id === p.category)?.type === 'te
 const matches = p => !st.q || `${p.title} ${p.authorName} ${displayName(authorOf(p))}`.toLowerCase().includes(st.q.toLowerCase());
 const sorted = list => (st.sort === 'liked' ? [...list].sort((a, b) => likeCount(b.id) - likeCount(a.id) || b.createdAt - a.createdAt) : list);
 
-/* ---------- artist header (shown when browsing one artist's work) ---------- */
 function artistHeader() {
   if (!st.artist) return '';
   const a = authorOf({ authorId: st.artist, authorName: '' }), me = currentUser();
@@ -35,7 +32,6 @@ function artistHeader() {
 }
 const followBtn = id => { const me = currentUser(); return me && me.id !== id ? `<button type="button" class="follow-btn${isFollowing(me.id, id) ? ' on' : ''}" data-follow="${esc(id)}">${isFollowing(me.id, id) ? '✓ Following' : '+ Follow'}</button>` : ''; };
 
-/* ---------- Pinterest-style masonry ---------- */
 function masonryCard(p) {
   const a = authorOf(p), likes = likeCount(p.id), cc = commentCount(p.id);
   const meta = `<span class="m-stats">♥ ${likes} · 💬 ${cc}</span>`;
@@ -46,7 +42,7 @@ function masonryCard(p) {
         <div class="m-over"><strong>${esc(p.title)}</strong><div class="m-foot"><span class="p-by">${avatarHTML(a, { size: 24 })}<span>${esc(displayName(a))}</span></span>${meta}</div></div></article>`;
 }
 
-function feed(kind) {          // kind: 'image' | 'text'
+function feed(kind) {          
   const cats = getCategories().filter(c => c.type === kind);
   if (st.cat !== 'all' && !cats.some(c => c.id === st.cat)) st.cat = 'all';
   const list = sorted(publicPosts().filter(p => cats.some(c => c.id === p.category) && (st.cat === 'all' || p.category === st.cat) &&
@@ -60,7 +56,6 @@ function feed(kind) {          // kind: 'image' | 'text'
     ${list.length ? `<div class="masonry">${list.map(masonryCard).join('')}</div>` : '<div class="empty-box">Nothing here yet.</div>'}`;
 }
 
-/* ---------- Explore: browse by category or by artist ---------- */
 function explore() {
   const posts = publicPosts();
   const catCards = getCategories().map(c => {
@@ -87,7 +82,6 @@ function explore() {
     ${st.mode === 'artists' ? (artists.length ? `<div class="ex-artists">${artistCards}</div>` : '<div class="empty-box">No artists match.</div>') : `<div class="ex-cats">${catCards}</div>`}`;
 }
 
-/* ---------- render + events ---------- */
 function render() {
   const t = tab();
   document.querySelectorAll('#galTabs a').forEach(a => a.classList.toggle('active', a.dataset.tab === t));
