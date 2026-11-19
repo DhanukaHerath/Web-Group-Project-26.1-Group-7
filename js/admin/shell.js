@@ -94,4 +94,24 @@ export function renderShell(app, ctx, { onSearch }) {
     }
 
     refreshBell();
+
+    app.adEventListener('click', e => {
+        const act = e.target.closeet('[data-action]')?.dataset.action;
+        if (act == 'logout') {
+            
+        }
+        if (act == 'open-drawer') {
+
+        }
+        if (act == 'close-drawer') {
+
+        }
+        if (act == 'user-menu') {
+
+        }
+        if (act == 'bell') {
+
+        }
+        closePops();
+    });
 }
