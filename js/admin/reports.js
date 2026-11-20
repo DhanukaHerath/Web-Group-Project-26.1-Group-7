@@ -1,3 +1,5 @@
+/* reports.js – builds the website-status report and per-event registration report. */
+
 import { allUsers, effectiveStatus } from '../core/auth.js';
 import { allPosts, getCategories } from '../core/posts.js';
 import { allEvents, registrationsFor } from '../core/events.js';
