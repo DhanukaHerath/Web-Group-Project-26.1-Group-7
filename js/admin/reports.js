@@ -109,4 +109,34 @@ export function openSiteReport(days) {
     });
 }
 
-export function openEventReport() {}
+export function openEventReport() {
+    const regs = registrationsFor(ev.id);
+    openReport(
+        { title: `Registrations - ${ev.title}`,
+            subtitle: `${ev.kind} · ${fmtDate(ev.date)} · ${ev.venue}`,
+            filename: `registrations-${ev.id}`,
+            sections: [
+                { heading: 'Summary',
+                    kv: [
+                        ['Total registrations', regs.length],
+                        ['Registration closes', ev.registerBy ? fmtDate(ev.registerBy) : '–']
+                    ]
+                },
+                { heading: 'Registered attendees',
+                    columns: ['#', 'Full name', 'Username', 'Email', 'Faculty', 'Batch', 'Phone', 'Registered', 'Note'],
+                    rows: regs.map((r, i) => [
+                        i + 1,
+                        r.fullName,
+                        r.user ? '@' + r.user.username : '',
+                        r.email,
+                        r.faculty,
+                        r.batch,
+                        r.phone || '',
+                        timeAgo(r.createdAt),
+                        r.note || ''
+                    ])
+                },
+            ],
+        }
+    );
+}
