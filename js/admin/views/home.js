@@ -97,5 +97,76 @@ export function render(container, ctx) {
                 }<small>Page views (14 days)</small>
             </div>
         </div>
-    </div>`;
+    </div>
+    
+    <section class="big-card">
+        <h3>Active users right now</h3>
+        <div class="big-grid">
+            <div class="big-left">
+                <div class="big-num">
+                    ${o.active15m}
+                </div>
+                <p class="big-sub">
+                    members active in the last 15 min · ${o.active24h} in the last 24 h
+                </p>
+                <div class="pv">
+                    <span class="pv-ic">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 2h9l5 5v15H6zm8 1.500V8h4.500z"/>
+                        </svg>
+                    </span>
+                    <span>Page views<br>today: <b>${todayViews}</b></span>
+                </div>
+                <canvas id="spBig" height="60"></canvas>
+                <p class="big-cap">Page views, last 14 days</p>
+            </div>
+            <div class="chart-box">
+                <canvas id="bars"></canvas>
+            </div>
+        </div>
+        <div class="tiles">
+            <div class="tile">
+                <div class="tile-h">
+                    <i class="ti t-purple"></i>Members
+                </div>
+                <b>${o.members}</b>
+                <div class="bar">
+                    <span class="c-purple" style="width:${pct(o.active7d, o.members)}%"></span>
+                </div>
+                <small>${pct(o.active7d, o.members)}% active this week</small>
+            </div>
+            <div class="tile">
+                <div class="tile-h">
+                    <i class="ti t-blue"></i>Posts
+                </div>
+                <b>${o.approved}</b>
+                <div class="bar">
+                    <span class="c-blue" style="width:${pct(o.approved, o.posts)}%"></span>
+                </div>
+                <small>${o.posts} submitted · ${o.featured} featured</small>
+            </div>
+            <div class="tile">
+                <div class="tile-h">
+                    <i class="ti t-red"></i>Pending
+                </div>
+                <b>${o.pending}</b>
+                <div class="bar">
+                    <span class="c-red" style="width:${pct(o.pending, o.posts)}%"></span>
+                </div>
+                <small>
+                    <a href="#queue/pending">Review now</a> · ${o.disapproved} disapproved
+                </small>
+            </div>
+            <div class="tile">
+                <div class="tile-h">
+                    <i class="ti t-cyan"></i>Registrations
+                </div>
+                <b>${o.registrations}</b>
+                <div class="bar">
+                    <span class="c-cyan" style="width:${pct(o.registeredMembers, o.members)}%"></span>
+                </div>
+                <small>${pct(o.registeredMembers, o.members)}% of members registered</small>
+            </div>
+        </div>
+    </section>`;
 }
