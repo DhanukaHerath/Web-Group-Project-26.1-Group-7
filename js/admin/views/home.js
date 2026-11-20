@@ -169,4 +169,11 @@ export function render(container, ctx) {
             </div>
         </div>
     </section>`;
+
+    if (!window.Chart) {
+        el.querySelector('.big-grid').insertAdjacentHTML(
+            'beforeend',
+            '<p class="empty-box">Charts could not load (vendor/chartjs/chart.umd.js missing).</p>'
+        );
+    } else {}
 }
