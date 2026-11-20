@@ -45,3 +45,6 @@ async function submit(form, action, onDone) {
   try { const u = await action(Object.fromEntries(new FormData(form))); onDone(u); }
   catch (err) { errEl.textContent = err.message; btn.disabled = false; }
 }
+
+forms.login.addEventListener('submit', e => { e.preventDefault(); submit(forms.login, login, u => location.href = isAdmin(u) ? 'admin.html' : (safeNext || 'dashboard.html')); });
+forms.register.addEventListener('submit', e => { e.preventDefault(); submit(forms.register, register, () => location.href = 'profile-edit.html?welcome=1'); });
