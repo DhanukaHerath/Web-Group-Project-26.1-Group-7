@@ -175,5 +175,111 @@ export function render(container, ctx) {
             'beforeend',
             '<p class="empty-box">Charts could not load (vendor/chartjs/chart.umd.js missing).</p>'
         );
-    } else {}
+    } else {
+        Chart.defaults.font.family = '"Plus Jakarta Sans", Arial, sans-serif';
+
+        const line = (id, data, color) => charts.push(
+            new Chart(
+                el.querySelector(id),
+                { type: 'line',
+                    data: {
+                        labels: now14.labels,
+                        datasets: [{ 
+                            data,
+                            borderColor: color,
+                            borderWidth: 2,
+                            tension: .4,
+                            pointRadius: 0,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        events: [],
+                        plugins: {
+                            legend: {display: false },
+                            tooltip: { enabled: false }
+                        },
+                        scales: { 
+                            x: { display: false }, y: { display: false } 
+                        }
+                    },
+                }
+            )
+        );
+        line(
+            '#sp1',
+            now14.posts,
+            PURPLE
+        );
+        line(
+            '#sp2',
+            now14.regs,
+            GREEN
+        );
+        line(
+            '#sp3',
+            now14.views,
+            CYAN
+        );
+        line(
+            '#spBig',
+            now14.views,
+            PURPLE
+        );
+
+        charts.push(
+            new Chart(
+                el.querySelector('#bars'),
+                { type: 'bar',
+                    data: {
+                        labels: s10.labels,
+                        datasets: [
+                            { label: 'Page views',
+                                data: s10.views,
+                                backgroundColor: LIGHT,
+                                borderRadius: 4,
+                                barThickness: 8,
+                                grouped: false,
+                                order: 2
+                            },
+                            { label: 'Interactions (logins, posts, likes, comments, follows…)',
+                                data: s10.interactions,
+                                backgroundColor: PURPLE,
+                                borderRadius: 4,
+                                barThickness: 8,
+                                grouped: false,
+                                order: 1
+                            },
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 10,
+                                    usePointStyle: true,
+                                    font: { size: 11 }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0,0,0,.06)',
+                                    borderDash: [4, 4]
+                                }
+                            }
+                        }
+                    },
+                }
+            )
+        );
+    }
 }
