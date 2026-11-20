@@ -15,4 +15,25 @@ const pct = (a, b) => (
     b ? Math.round((a / b) * 100) : 0
 );
 
-export function render(container, ctx) {}
+export function render(container, ctx) {
+    charts.forEach(
+        c => c.destroy()
+    );
+    charts = [];
+    const el = document.createElement('div');
+    container.replaceChildren(el);
+
+    const o = overview();
+    const now14 = series(14);
+    const prev14 = series(14, 14);
+    const s10 = series(10);
+
+    const avgPosts = (sum(now14.posts) / 14).toFixed(1);
+
+    const regs14 = sum(now14.regs);
+    const views14 = sum(now14.views);
+
+    const todayViews = now14.views.at(-1);
+
+    el.innerHTML = ``;
+}
