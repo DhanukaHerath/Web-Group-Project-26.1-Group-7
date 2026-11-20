@@ -111,7 +111,7 @@ export function openSiteReport(days) {
     });
 }
 
-export function openEventReport() {
+export function openEventReport(ev) {
     const regs = registrationsFor(ev.id);
     openReport(
         { title: `Registrations - ${ev.title}`,
