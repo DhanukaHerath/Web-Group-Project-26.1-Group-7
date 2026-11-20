@@ -35,5 +35,67 @@ export function render(container, ctx) {
 
     const todayViews = now14.views.at(-1);
 
-    el.innerHTML = ``;
+    el.innerHTML = `
+    <div class="welcome-banner">
+        ${avatarHTML(
+            ctx.user,
+            { size: 48 }
+        )}
+        <div>
+            <h2>Welcome back! ${
+                esc(
+                    (
+                        ctx.user.fullName || ctx.user.username
+                    ).split(' ')[0]
+                )
+            } 👋</h2><p>Check your reports</p>
+        </div>
+        <button type="button" class="btn-solid" data-report="30">
+            Generate website report
+        </button>
+    </div>
+
+    <div class="spark-row">
+        <div class="spark">
+            <canvas id="sp1"></canvas>
+            <div>
+                <b>${avgPosts}</b>${
+                    deltaTag(
+                        delta(
+                            sum(now14.posts),
+                            sum(prev14.posts)
+                        )
+                    )
+                }<small>Posts per day (14 days)</small>
+            </div>
+        </div>
+        <div class="spark">
+            <canvas id="sp2"></canvas>
+            <div>
+                <b>${regs14}</b>${
+                    deltaTag(
+                        delta(
+                            regs14,
+                            sum(prev14.regs)
+                        )
+                    )
+                }<small>Event registrations (14 days)</small>
+            </div>
+        </div>
+        <div class="spark">
+            <canvas id="sp3"></canvas>
+            <div>
+                <b>${
+                    views14.toLocaleString()
+                }</b>${
+                    deltaTag(
+                        delta(
+                            views14,
+                            sum(prev14.views)
+                        )
+                    )
+                }<small>Page views (14 days)</small>
+            </div>
+        </div>
+    </div>`;
 }
