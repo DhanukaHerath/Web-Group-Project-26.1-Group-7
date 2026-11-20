@@ -1,3 +1,5 @@
+/* admin home – website status + user interaction (Chart.js). */
+
 import { series, sum, delta, overview } from '../stats.js';
 import { avatarHTML } from '../../humation/avatar-view.js';
 import { openSiteReport } from '../reports.js';
@@ -170,6 +172,7 @@ export function render(container, ctx) {
         </div>
     </section>`;
 
+    /* ---- Chart.js ---- */
     if (!window.Chart) {
         el.querySelector('.big-grid').insertAdjacentHTML(
             'beforeend',
@@ -280,6 +283,15 @@ export function render(container, ctx) {
                     },
                 }
             )
+        );
+        el.addEventListener(
+            'click',
+            e => {
+                const r = e.target.closest('[data-report]');
+                if (r) {
+                    openSiteReport(+r.dataset.report);
+                }
+            }
         );
     }
 }
