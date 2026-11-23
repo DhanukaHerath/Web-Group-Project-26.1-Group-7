@@ -17,7 +17,7 @@ const I = {
   bell: '<svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6 17V11a6 6 0 1 1 12 0v6l2 2H4zM10 21h4"/></svg>',
   menu: '<svg viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>',
 };
-const LOGO = `<svg viewBox="0 0 72 72" class="brand-mark" aria-hidden="true"><rect width="72" height="72" rx="20" fill="#25356b"/><path d="M38 14c14 4 10 14 0 18 8 2 6 12-4 26" fill="none" stroke="#e8a13a" stroke-width="4" stroke-linecap="round"/><circle cx="40" cy="14" r="3" fill="#fff"/></svg>`;
+const LOGO = `<img src="images/logo.png" alt="Scriptorium logo" class="brand-mark" width="74" height="74">`;
 
 /* route ids → heading / whether the top search box applies */
 export const TITLES = {
