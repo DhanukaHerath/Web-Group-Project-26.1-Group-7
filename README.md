@@ -28,6 +28,38 @@ In this architecture, both the **Frontend Web Pages** and the **PHP / MySQL API*
 
 ---
 
+## 2. Quick Setup & Run Guide
+
+### Option A: Using the PHP Built-in Server (Recommended & Instant)
+
+#### Step 1: Start MySQL in XAMPP
+Open **XAMPP Control Panel** and click **Start** next to **MySQL**.
+
+#### Step 2: Initialize Database & Seed Data
+Run the one-click migrator:
+```powershell
+& "C:\xampp\php\php.exe" api/setup.php
+```
+
+#### Step 3: Start the Unified Server (Single Port 8000)
+```powershell
+# From this directory:
+& "C:\xampp\php\php.exe" -S localhost:8000 router.php
+```
+Open your browser to: **`http://localhost:8000/`**
+- Web pages load at: `http://localhost:8000/index.html`
+- API endpoints respond at: `http://localhost:8000/api/`
+- Uploaded media loads at: `http://localhost:8000/uploads/`
+
+---
+
+### Option B: Deploying directly into XAMPP Apache
+1. Copy this folder into `C:\xampp\htdocs\scriptorium\`.
+2. Start both **Apache** and **MySQL** in XAMPP Control Panel.
+3. Open `http://localhost/scriptorium/api/setup.php` to initialize the database.
+4. Open `http://localhost/scriptorium/scriptorium/` in your browser.
+
+---
 
 ## 3. Configuration
 - **API Base URL:** Configured in `scriptorium/js/core/config.js`:
