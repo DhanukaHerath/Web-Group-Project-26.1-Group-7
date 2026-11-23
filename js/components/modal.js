@@ -5,7 +5,7 @@ export function openModal(innerHTML, { wide = false } = {}) {
   back.className = 'modal-backdrop';
   back.innerHTML = `
     <div class="auth-modal${wide ? ' wide' : ''}" role="dialog" aria-modal="true">
-      <header class="auth-modal-head"><span class="auth-brand">Scriptorium</span>
+      <header class="auth-modal-head"><span class="auth-brand"><img src="images/logo.png" alt="" class="auth-logo" width="32" height="32">Scriptorium</span>
         <button type="button" class="auth-close" data-close aria-label="Close">&#10005;</button></header>
       <section class="auth-card">${innerHTML}</section>
     </div>`;

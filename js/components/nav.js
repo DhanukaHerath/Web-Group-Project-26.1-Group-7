@@ -19,7 +19,7 @@ export function initNav() {
 
   header.className = 'navbar';
   header.innerHTML = `
-    <a href="index.html" class="logo">Scriptorium</a>
+    <a href="index.html" class="logo"><img src="images/logo.png" alt="" class="logo-img" width="32" height="32"><span>Scriptorium</span></a>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navMenu"><span></span><span></span><span></span></button>
     <nav class="nav-menu" id="navMenu">
       <ul class="nav-links">
