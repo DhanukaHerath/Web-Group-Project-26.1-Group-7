@@ -126,6 +126,59 @@ if ($method === 'GET') {
 
     jsonResponse($posts);
 }
+// Handle PATCH: Review decision (approve/disapprove) or toggle featured status
+$action = $_GET['action'] ?? '';
+if ($method === 'PATCH' || ($method === 'POST' && in_array($action, ['review', 'feature'], true))) {
+    $admin = requireAdmin($pdo);
+    $body = getJsonBody();
+    $action = $action ?: ($body['action'] ?? '');
+    $postId = $_GET['id'] ?? ($body['id'] ?? '');
+    if (!$postId) errorResponse('Post ID is required.');
+
+    $stmt = $pdo->prepare("SELECT * FROM `posts` WHERE `id` = ? LIMIT 1");
+    $stmt->execute([$postId]);
+    $post = $stmt->fetch();
+    if (!$post) errorResponse('Post not found.', 404);
+
+    if ($action === 'review') {
+        $decision = $body['decision'] ?? '';
+        $note = trim($body['note'] ?? '');
+
+        if (!in_array($decision, ['approved', 'disapproved'])) {
+            errorResponse("Decision must be either 'approved' or 'disapproved'.");
+        }
+        if ($decision === 'disapproved' && strlen($note) < 5) {
+            errorResponse('Please write an explanation note for disapproving (at least 5 characters).');
+        }
+
+        $now = nowMs();
+        $up = $pdo->prepare("UPDATE `posts` SET `status` = ?, `review_note` = ?, `reviewed_at` = ?, `reviewed_by` = ?, `featured` = ? WHERE `id` = ?");
+        $featuredStatus = ($decision === 'approved') ? $post['featured'] : 0;
+        $up->execute([$decision, $note, $now, $admin['id'], $featuredStatus, $postId]);
+
+        // Create notification for author
+        $notifId = generateId('n_');
+        $notifTitle = ($decision === 'approved') ? 'Post approved' : 'Post disapproved';
+        $notifMsg = ($decision === 'approved')
+            ? "“{$post['title']}” was approved and is now in the gallery."
+            : "“{$post['title']}” was not approved. Reason: {$note}";
+        $notifType = ($decision === 'approved') ? 'approved' : 'disapproved';
+
+        $nStmt = $pdo->prepare("INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `post_id`, `created_at`, `is_read`) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
+        $nStmt->execute([$notifId, $post['author_id'], $notifType, $notifTitle, $notifMsg, $postId, $now]);
+
+        jsonResponse(['message' => "Post {$decision}", 'status' => $decision]);
+    }
+
+    if ($action === 'feature') {
+        $featured = !empty($body['featured']) ? 1 : 0;
+        $up = $pdo->prepare("UPDATE `posts` SET `featured` = ? WHERE `id` = ?");
+        $up->execute([$featured, $postId]);
+        jsonResponse(['message' => 'Featured status updated', 'featured' => (bool)$featured]);
+    }
+
+    errorResponse('Invalid action.');
+}
 
 // Handle POST: Submit new post
 if ($method === 'POST') {
@@ -222,60 +275,6 @@ if ($method === 'POST') {
             'createdAt' => $now
         ]
     ], 201);
-}
-
-// Handle PATCH: Review decision (approve/disapprove) or toggle featured status
-if ($method === 'PATCH') {
-    $admin = requireAdmin($pdo);
-    $body = getJsonBody();
-    $action = $_GET['action'] ?? ($body['action'] ?? '');
-    $postId = $_GET['id'] ?? ($body['id'] ?? '');
-
-    if (!$postId) errorResponse('Post ID is required.');
-
-    $stmt = $pdo->prepare("SELECT * FROM `posts` WHERE `id` = ? LIMIT 1");
-    $stmt->execute([$postId]);
-    $post = $stmt->fetch();
-    if (!$post) errorResponse('Post not found.', 404);
-
-    if ($action === 'review') {
-        $decision = $body['decision'] ?? '';
-        $note = trim($body['note'] ?? '');
-
-        if (!in_array($decision, ['approved', 'disapproved'])) {
-            errorResponse("Decision must be either 'approved' or 'disapproved'.");
-        }
-        if ($decision === 'disapproved' && strlen($note) < 5) {
-            errorResponse('Please write an explanation note for disapproving (at least 5 characters).');
-        }
-
-        $now = nowMs();
-        $up = $pdo->prepare("UPDATE `posts` SET `status` = ?, `review_note` = ?, `reviewed_at` = ?, `reviewed_by` = ?, `featured` = ? WHERE `id` = ?");
-        $featuredStatus = ($decision === 'approved') ? $post['featured'] : 0;
-        $up->execute([$decision, $note, $now, $admin['id'], $featuredStatus, $postId]);
-
-        // Create notification for author
-        $notifId = generateId('n_');
-        $notifTitle = ($decision === 'approved') ? 'Post approved' : 'Post disapproved';
-        $notifMsg = ($decision === 'approved')
-            ? "“{$post['title']}” was approved and is now in the gallery."
-            : "“{$post['title']}” was not approved. Reason: {$note}";
-        $notifType = ($decision === 'approved') ? 'approved' : 'disapproved';
-
-        $nStmt = $pdo->prepare("INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `post_id`, `created_at`, `is_read`) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
-        $nStmt->execute([$notifId, $post['author_id'], $notifType, $notifTitle, $notifMsg, $postId, $now]);
-
-        jsonResponse(['message' => "Post {$decision}", 'status' => $decision]);
-    }
-
-    if ($action === 'feature') {
-        $featured = !empty($body['featured']) ? 1 : 0;
-        $up = $pdo->prepare("UPDATE `posts` SET `featured` = ? WHERE `id` = ?");
-        $up->execute([$featured, $postId]);
-        jsonResponse(['message' => 'Featured status updated', 'featured' => (bool)$featured]);
-    }
-
-    errorResponse('Invalid action for PATCH.');
 }
 
 errorResponse('Method not allowed.', 405);
