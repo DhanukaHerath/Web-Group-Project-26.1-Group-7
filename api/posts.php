@@ -201,7 +201,14 @@ if ($method === 'POST') {
         $text = trim($_POST['text'] ?? '');
 
         // Handle file upload
-        if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['file']) && $_FILES['file']['error'] !== UPLOAD_ERR_NO_FILE) {
+            if ($_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+                $errCode = $_FILES['file']['error'];
+                if ($errCode === UPLOAD_ERR_INI_SIZE || $errCode === UPLOAD_ERR_FORM_SIZE) {
+                    errorResponse('Image is too large for the server upload limit. Please choose a smaller image.');
+                }
+                errorResponse('Image upload failed (error code ' . $errCode . '). Please try again.');
+            }
             $file = $_FILES['file'];
             $maxBytes = 8 * 1024 * 1024;
             if ($file['size'] > $maxBytes) {
@@ -209,9 +216,16 @@ if ($method === 'POST') {
             }
 
             $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime = finfo_file($finfo, $file['tmp_name']);
-            finfo_close($finfo);
+            $mime = '';
+            if (function_exists('finfo_open')) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $file['tmp_name']) ?: '';
+                finfo_close($finfo);
+            }
+            if (!$mime && function_exists('getimagesize')) {
+                $info = @getimagesize($file['tmp_name']);
+                $mime = $info['mime'] ?? '';
+            }
 
             if (!in_array($mime, $allowedMimes)) {
                 errorResponse('Invalid image type. Only PNG, JPG, and WebP are allowed.');

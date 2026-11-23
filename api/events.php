@@ -8,6 +8,33 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
 if ($method === 'GET') {
+    if ($action === 'all_registrations') {
+        $currentUser = getCurrentUser($pdo);
+        if (!$currentUser) jsonResponse([]);
+        if ($currentUser['role'] === 'admin') {
+            $stmt = $pdo->query("SELECT r.`event_id`, r.`user_id`, r.`created_at`, u.`full_name`, u.`username`, u.`email`, u.`faculty`, u.`batch`
+                FROM `event_registrations` r
+                JOIN `users` u ON r.`user_id` = u.`id`
+                ORDER BY r.`created_at` ASC");
+            $rows = $stmt->fetchAll();
+        } else {
+            $stmt = $pdo->prepare("SELECT r.`event_id`, r.`user_id`, r.`created_at`, u.`full_name`, u.`username`, u.`email`, u.`faculty`, u.`batch`
+                FROM `event_registrations` r
+                JOIN `users` u ON r.`user_id` = u.`id`
+                WHERE r.`user_id` = ?
+                ORDER BY r.`created_at` ASC");
+            $stmt->execute([$currentUser['id']]);
+            $rows = $stmt->fetchAll();
+        }
+        foreach ($rows as &$r) {
+            $r['eventId'] = $r['event_id'];
+            $r['userId'] = $r['user_id'];
+            $r['fullName'] = $r['full_name'];
+            $r['createdAt'] = (int)$r['created_at'];
+        }
+        jsonResponse($rows);
+    }
+
     if ($action === 'registrations') {
         requireAdmin($pdo);
         $eventId = $_GET['event_id'] ?? null;
@@ -113,6 +140,35 @@ if ($method === 'POST') {
         $stmt->execute([$id, $kind, $title, $venue, $date, $description, $registerBy, $now]);
 
         jsonResponse(['message' => 'Event created successfully', 'id' => $id], 201);
+    }
+
+    if ($action === 'update') {
+        requireAdmin($pdo);
+        $id = $_GET['id'] ?? ($body['id'] ?? '');
+        if (!$id) errorResponse('Event ID is required.');
+        $kind = in_array($body['kind'] ?? '', ['Exhibition', 'Notice', 'Event']) ? $body['kind'] : 'Event';
+        $title = trim($body['title'] ?? '');
+        $venue = trim($body['venue'] ?? '');
+        $date = (int)($body['date'] ?? 0);
+        $description = trim($body['description'] ?? '');
+        $registerBy = !empty($body['register_by']) ? (int)$body['register_by'] : null;
+        if (strlen($title) < 3) errorResponse('Please enter an event title.');
+        if (!$date) errorResponse('Please select an event date.');
+        if (!$venue) errorResponse('Please enter a venue.');
+        if ($registerBy && $registerBy > $date) errorResponse('Registration deadline must be before the event date.');
+        if ($kind === 'Notice') $registerBy = null;
+        $stmt = $pdo->prepare("UPDATE `events` SET `kind` = ?, `title` = ?, `venue` = ?, `date` = ?, `description` = ?, `register_by` = ? WHERE `id` = ?");
+        $stmt->execute([$kind, $title, $venue, $date, $description, $registerBy, $id]);
+        jsonResponse(['message' => 'Event updated successfully']);
+    }
+
+    if ($action === 'delete') {
+        requireAdmin($pdo);
+        $id = $_GET['id'] ?? ($body['id'] ?? '');
+        if (!$id) errorResponse('Event ID is required.');
+        $stmt = $pdo->prepare("DELETE FROM `events` WHERE `id` = ?");
+        $stmt->execute([$id]);
+        jsonResponse(['message' => 'Event and its registrations deleted successfully']);
     }
 
     errorResponse('Invalid action for POST.');

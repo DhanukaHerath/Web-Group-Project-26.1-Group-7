@@ -15,6 +15,28 @@ if ($method === 'GET') {
     jsonResponse($categories);
 }
 
+$action = $_GET['action'] ?? '';
+if ($method === 'DELETE' || ($method === 'POST' && $action === 'delete')) {
+    requireAdmin($pdo);
+    $body = $method === 'POST' ? getJsonBody() : [];
+    $id = $_GET['id'] ?? ($body['id'] ?? '');
+    if (!$id) errorResponse('Category ID is required.');
+
+    // Count usage
+    $chk = $pdo->prepare("SELECT COUNT(*) FROM `posts` WHERE `category` = ?");
+    $chk->execute([$id]);
+    $count = (int)$chk->fetchColumn();
+
+    if ($count > 0) {
+        errorResponse("{$count} post(s) still use this category, so it cannot be removed.", 400);
+    }
+
+    $del = $pdo->prepare("DELETE FROM `categories` WHERE `id` = ?");
+    $del->execute([$id]);
+
+    jsonResponse(['message' => 'Category deleted successfully']);
+}
+
 if ($method === 'POST') {
     requireAdmin($pdo);
     $body = getJsonBody();
@@ -56,26 +78,6 @@ if ($method === 'POST') {
     jsonResponse(['message' => 'Category created', 'category' => [
         'id' => $id, 'label' => $label, 'plural' => $plural, 'type' => $type, 'description' => $description
     ]], 201);
-}
-
-if ($method === 'DELETE') {
-    requireAdmin($pdo);
-    $id = $_GET['id'] ?? '';
-    if (!$id) errorResponse('Category ID is required.');
-
-    // Count usage
-    $chk = $pdo->prepare("SELECT COUNT(*) FROM `posts` WHERE `category` = ?");
-    $chk->execute([$id]);
-    $count = (int)$chk->fetchColumn();
-
-    if ($count > 0) {
-        errorResponse("{$count} post(s) still use this category, so it cannot be removed.", 400);
-    }
-
-    $del = $pdo->prepare("DELETE FROM `categories` WHERE `id` = ?");
-    $del->execute([$id]);
-
-    jsonResponse(['message' => 'Category deleted successfully']);
 }
 
 errorResponse('Method not allowed.', 405);
