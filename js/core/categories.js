@@ -1,4 +1,3 @@
-/* categories.js – post categories (managed by admins). */
 import { read, write, persistent } from './storage.js';
 
 const KEY = 'scriptorium.categories';
@@ -19,7 +18,6 @@ export const isTextCategory = id => categoryOf(id)?.type === 'text';
 
 const pluralOf = l => /(s|phy)$/i.test(l) ? l : /[^aeiou]y$/i.test(l) ? l.slice(0, -1) + 'ies' : l + 's';
 
-/** type: 'image' (upload + description) or 'text' (written piece). Throws Error(message). */
 export function addCategory({ label, type, description = '' }) {
   label = (label || '').trim();
   if (label.length < 2) throw new Error('Please enter a category name.');
@@ -30,7 +28,6 @@ export function addCategory({ label, type, description = '' }) {
   write(persistent, KEY, list);
 }
 
-/** Removes a category. `postCount` = how many posts use it (blocked if > 0). */
 export function removeCategory(id, postCount) {
   if (postCount > 0) throw new Error(`${postCount} post${postCount === 1 ? '' : 's'} still use this category, so it can't be removed.`);
   write(persistent, KEY, getCategories().filter(c => c.id !== id));
