@@ -4,7 +4,7 @@ import { syncPosts } from '../core/posts.js';
 import { syncSocial } from '../core/social.js';
 import { logActivity } from '../core/activity.js';
 import { closeModal } from '../components/modal.js';
-import { renderShell } from '../dashboard/shell.js';
+import { renderShell } from '../dashboard/shell.js?v=2';
 import { render as home } from '../dashboard/views/home.js';
 import { render as explore } from '../dashboard/views/explore.js';
 import { render as events } from '../dashboard/views/events.js';
