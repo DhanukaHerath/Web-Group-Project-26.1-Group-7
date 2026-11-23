@@ -1,6 +1,10 @@
+-- Scriptorium Database Schema & Seed Data for MySQL / MariaDB
+-- Character set: UTF-8 (utf8mb4)
+
 CREATE DATABASE IF NOT EXISTS `scriptorium` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `scriptorium`;
 
+-- 1. Users Table
 CREATE TABLE IF NOT EXISTS `users` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `full_name` VARCHAR(150) NOT NULL,
@@ -20,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   INDEX `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 2. Categories Table
 CREATE TABLE IF NOT EXISTS `categories` (
   `id` VARCHAR(50) NOT NULL PRIMARY KEY,
   `label` VARCHAR(100) NOT NULL,
@@ -28,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `description` VARCHAR(255) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 3. Posts Table
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `author_id` VARCHAR(64) NOT NULL,
@@ -51,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   CONSTRAINT `fk_posts_author` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 4. Events & Exhibitions Table
 CREATE TABLE IF NOT EXISTS `events` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `kind` ENUM('Exhibition', 'Event', 'Notice') NOT NULL DEFAULT 'Event',
@@ -63,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   INDEX `idx_date` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 5. Event Registrations Table
 CREATE TABLE IF NOT EXISTS `event_registrations` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `event_id` VARCHAR(64) NOT NULL,
@@ -73,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `event_registrations` (
   CONSTRAINT `fk_reg_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
+-- 6. Social Likes Table
 CREATE TABLE IF NOT EXISTS `likes` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `post_id` VARCHAR(64) NOT NULL,
@@ -84,6 +92,7 @@ CREATE TABLE IF NOT EXISTS `likes` (
   CONSTRAINT `fk_likes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 7. Social Comments Table
 CREATE TABLE IF NOT EXISTS `comments` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `post_id` VARCHAR(64) NOT NULL,
@@ -95,6 +104,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   CONSTRAINT `fk_comments_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 8. Social Follows Table
 CREATE TABLE IF NOT EXISTS `follows` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `follower_id` VARCHAR(64) NOT NULL,
@@ -105,6 +115,7 @@ CREATE TABLE IF NOT EXISTS `follows` (
   CONSTRAINT `fk_follows_followee` FOREIGN KEY (`followee_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 9. Notifications Table
 CREATE TABLE IF NOT EXISTS `notifications` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `user_id` VARCHAR(64) NOT NULL,
@@ -118,6 +129,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   CONSTRAINT `fk_notes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 10. Activity Logs Table
 CREATE TABLE IF NOT EXISTS `activity_logs` (
   `log_date` DATE NOT NULL PRIMARY KEY,
   `view_count` INT NOT NULL DEFAULT 0,
@@ -127,6 +139,11 @@ CREATE TABLE IF NOT EXISTS `activity_logs` (
   `signup_count` INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -------------------------------------------------------------
+-- SEED DATA
+-- -------------------------------------------------------------
+
+-- Categories
 INSERT INTO `categories` (`id`, `label`, `plural`, `type`, `description`) VALUES
 ('artwork', 'Artwork', 'Artworks', 'image', 'Paintings and drawings'),
 ('artcraft', 'Artcraft', 'Artcrafts', 'image', 'Handmade crafts'),
@@ -134,10 +151,12 @@ INSERT INTO `categories` (`id`, `label`, `plural`, `type`, `description`) VALUES
 ('poem', 'Poem', 'Poems', 'text', 'Poems and verse')
 ON DUPLICATE KEY UPDATE `label`=VALUES(`label`);
 
+-- Admin User (password: Admin@2026)
 INSERT INTO `users` (`id`, `full_name`, `username`, `email`, `faculty`, `batch`, `password_hash`, `role`, `status`, `bio`, `created_at`, `last_active_at`) VALUES
 ('u_admin', 'Scriptorium Admin', 'admin', 'admin@scriptorium.lk', 'Faculty of IT / Computing', '2022', '$2y$10$E/9qvAeODWF4xacEjGrLBeVpuMaapw1luFQOx4dHY8D/PTNVpS/xW', 'admin', 'active', 'Site administrator.', 1762580000000, 1762584000000)
 ON DUPLICATE KEY UPDATE `email`=VALUES(`email`);
 
+-- Demo Members (password: Admin@2026 for easy testing)
 INSERT INTO `users` (`id`, `full_name`, `username`, `email`, `faculty`, `batch`, `password_hash`, `role`, `status`, `suspended_until`, `bio`, `created_at`, `last_active_at`) VALUES
 ('seed-nethmi', 'Nethmi Silva', 'nethmi_silva', 'nethmi@example.com', 'Faculty of Fine Arts & Design', '2024', '$2y$10$E/9qvAeODWF4xacEjGrLBeVpuMaapw1luFQOx4dHY8D/PTNVpS/xW', 'member', 'active', NULL, 'Painter & digital artist.', 1757580000000, 1762580000000),
 ('seed-kavindu', 'Kavindu Fernando', 'kavindu_f', 'kavindu@example.com', 'Faculty of Arts', '2023', '$2y$10$E/9qvAeODWF4xacEjGrLBeVpuMaapw1luFQOx4dHY8D/PTNVpS/xW', 'member', 'active', NULL, 'Poet & literature student.', 1758180000000, 1762530000000),
@@ -148,32 +167,36 @@ INSERT INTO `users` (`id`, `full_name`, `username`, `email`, `faculty`, `batch`,
 ('seed-chamath', 'Chamath Rajapaksa', 'chamath_r', 'chamath@example.com', 'Faculty of Engineering', '2023', '$2y$10$E/9qvAeODWF4xacEjGrLBeVpuMaapw1luFQOx4dHY8D/PTNVpS/xW', 'member', 'banned', NULL, 'Past contributor.', 1761290000000, 1761140000000)
 ON DUPLICATE KEY UPDATE `email`=VALUES(`email`);
 
+-- Gallery Artworks
 INSERT INTO `posts` (`id`, `author_id`, `author_name`, `category`, `title`, `description`, `text`, `image`, `created_at`, `status`, `featured`) VALUES
-('p_seed_art1', 'seed-nethmi', 'nethmi_silva', 'artwork', 'Blue Blossom', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art1.jpg', 1762493600000, 'approved', 1),
-('p_seed_art2', 'seed-kavindu', 'kavindu_f', 'artwork', 'The Dancer', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art2.jpg', 1762381200000, 'approved', 1),
-('p_seed_art3', 'seed-ishara', 'ishara_j', 'artwork', 'Garden Wanderer', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art3.jpg', 1762268800000, 'approved', 1),
-('p_seed_art4', 'seed-dilan', 'dilan_p', 'artwork', 'Lighthouse Swirl', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art4.jpg', 1762156400000, 'approved', 1),
-('p_seed_art5', 'seed-sanduni', 'sanduni_w', 'artwork', 'Skeleton Bouquet', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art5.jpg', 1762044000000, 'approved', 1),
-('p_seed_art6', 'seed-nethmi', 'nethmi_silva', 'artwork', 'Eiffel at Night', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art6.jpg', 1761931600000, 'approved', 1),
-('p_seed_art7', 'seed-kavindu', 'kavindu_f', 'artwork', 'Self-Portrait with Violinist', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art7.jpg', 1761819200000, 'approved', 1),
-('p_seed_art8', 'seed-ishara', 'ishara_j', 'artwork', 'Mona Lisa, Reimagined', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art8.jpg', 1761706800000, 'approved', 1),
-('p_seed_art9', 'seed-dilan', 'dilan_p', 'artwork', 'Shadows Below', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art9.jpg', 1761594400000, 'approved', 1),
-('p_seed_art10', 'seed-sanduni', 'sanduni_w', 'artwork', 'Koi Pond', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art10.jpg', 1761482000000, 'approved', 1),
-('p_seed_art11', 'seed-nethmi', 'nethmi_silva', 'artwork', 'Painted Earth', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art11.jpg', 1761369600000, 'approved', 1)
-ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
+('p_seed_art1', 'seed-nethmi', 'nethmi_silva', 'artwork', 'Blue Blossom', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art1.jpg', 1794029600000, 'approved', 1),
+('p_seed_art2', 'seed-kavindu', 'kavindu_f', 'artwork', 'The Dancer', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art2.jpg', 1793917200000, 'approved', 1),
+('p_seed_art3', 'seed-ishara', 'ishara_j', 'artwork', 'Garden Wanderer', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art3.jpg', 1793804800000, 'approved', 1),
+('p_seed_art4', 'seed-dilan', 'dilan_p', 'artwork', 'Lighthouse Swirl', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art4.jpg', 1793692400000, 'approved', 1),
+('p_seed_art5', 'seed-sanduni', 'sanduni_w', 'artwork', 'Skeleton Bouquet', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art5.jpg', 1793580000000, 'approved', 1),
+('p_seed_art6', 'seed-nethmi', 'nethmi_silva', 'artwork', 'Eiffel at Night', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art6.jpg', 1793467600000, 'approved', 1),
+('p_seed_art7', 'seed-kavindu', 'kavindu_f', 'artwork', 'Self-Portrait with Violinist', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art7.jpg', 1793355200000, 'approved', 1),
+('p_seed_art8', 'seed-ishara', 'ishara_j', 'artwork', 'Mona Lisa, Reimagined', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art8.jpg', 1793242800000, 'approved', 1),
+('p_seed_art9', 'seed-dilan', 'dilan_p', 'artwork', 'Shadows Below', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art9.jpg', 1793130400000, 'approved', 1),
+('p_seed_art10', 'seed-sanduni', 'sanduni_w', 'artwork', 'Koi Pond', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art10.jpg', 1793018000000, 'approved', 1),
+('p_seed_art11', 'seed-nethmi', 'nethmi_silva', 'artwork', 'Painted Earth', 'A sample artwork from the Scriptorium community.', '', 'images/gallery/art11.jpg', 1792905600000, 'approved', 1)
+ON DUPLICATE KEY UPDATE `title`=VALUES(`title`), `created_at`=VALUES(`created_at`);
 
+-- Seed Poems
 INSERT INTO `posts` (`id`, `author_id`, `author_name`, `category`, `title`, `description`, `text`, `image`, `created_at`, `status`, `featured`) VALUES
-('p_seed_poem1', 'seed-ishara', 'ishara_j', 'poem', 'Monsoon Window', '', 'The rain writes slow letters on the glass,\nand I read each one aloud —\nsmall rivers learning how to leave.', '', 1762536800000, 'approved', 0),
-('p_seed_poem2', 'seed-dilan', 'dilan_p', 'poem', 'Ink', '', 'I borrowed the night to write with,\nbut the morning kept asking\nfor its colours back.', '', 1762364000000, 'approved', 0),
-('p_seed_poem3', 'seed-sanduni', 'sanduni_w', 'poem', 'Home Is a Verb', '', 'Not the roof, not the road —\nthe way your name sounds\nwhen someone calls it kindly.', '', 1762191200000, 'approved', 0),
-('p_seed_poem4', 'seed-nethmi', 'nethmi_silva', 'poem', 'Brushstroke', '', 'One line, and the blank page\nstops being afraid of itself.', '', 1762018400000, 'approved', 0)
-ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
+('p_seed_poem1', 'seed-ishara', 'ishara_j', 'poem', 'Monsoon Window', '', 'The rain writes slow letters on the glass,\nand I read each one aloud —\nsmall rivers learning how to leave.', '', 1794072800000, 'approved', 0),
+('p_seed_poem2', 'seed-dilan', 'dilan_p', 'poem', 'Ink', '', 'I borrowed the night to write with,\nbut the morning kept asking\nfor its colours back.', '', 1793900000000, 'approved', 0),
+('p_seed_poem3', 'seed-sanduni', 'sanduni_w', 'poem', 'Home Is a Verb', '', 'Not the roof, not the road —\nthe way your name sounds\nwhen someone calls it kindly.', '', 1793727200000, 'approved', 0),
+('p_seed_poem4', 'seed-nethmi', 'nethmi_silva', 'poem', 'Brushstroke', '', 'One line, and the blank page\nstops being afraid of itself.', '', 1793554400000, 'approved', 0)
+ON DUPLICATE KEY UPDATE `title`=VALUES(`title`), `created_at`=VALUES(`created_at`);
 
+-- Pending Submissions (in Admin Queue)
 INSERT INTO `posts` (`id`, `author_id`, `author_name`, `category`, `title`, `description`, `text`, `image`, `created_at`, `status`, `featured`) VALUES
-('p_seed_pend1', 'seed-kavindu', 'kavindu_f', 'poem', 'Rain on Tin Roofs', '', 'Every drop knocks twice —\nonce on the roof, once on memory.', '', 1762562000000, 'pending', 0),
-('p_seed_pend2', 'seed-sanduni', 'sanduni_w', 'poem', 'Sunday Market', '', 'Mangoes stacked like small suns,\nthe vendor counts change in a song.', '', 1762544000000, 'pending', 0)
-ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
+('p_seed_pend1', 'seed-kavindu', 'kavindu_f', 'poem', 'Rain on Tin Roofs', '', 'Every drop knocks twice —\nonce on the roof, once on memory.', '', 1794098000000, 'pending', 0),
+('p_seed_pend2', 'seed-sanduni', 'sanduni_w', 'poem', 'Sunday Market', '', 'Mangoes stacked like small suns,\nthe vendor counts change in a song.', '', 1794080000000, 'pending', 0)
+ON DUPLICATE KEY UPDATE `title`=VALUES(`title`), `created_at`=VALUES(`created_at`);
 
+-- Events & Notices
 INSERT INTO `events` (`id`, `kind`, `title`, `venue`, `date`, `description`, `register_by`, `created_at`) VALUES
 ('e1', 'Exhibition', 'Scriptorium Annual Art Exhibition', 'University Main Hall', 1764394400000, 'Our yearly showcase of student paintings, crafts and photography. Selected pieces will be displayed and open to the public.', 1763789600000, 1762580000000),
 ('e2', 'Event', 'Open Mic Poetry Evening', 'Library Auditorium', 1763357600000, 'Read your own poems or just come to listen. Sign up for a 5-minute slot.', 1763184800000, 1762580000000),
@@ -181,4 +204,3 @@ INSERT INTO `events` (`id`, `kind`, `title`, `venue`, `date`, `description`, `re
 ('e4', 'Event', 'Artcraft Workshop: Paper & Clay', 'Fine Arts Studio 2', 1765172000000, 'A hands-on workshop for beginners. Materials are provided. Limited seats.', 1764653600000, 1762580000000),
 ('n1', 'Notice', 'Submissions open for the E-Chapbook', 'Online', 1762752800000, 'Share your poems and short prose through Create Post. Selected work will be featured in the next digital chapbook.', NULL, 1762580000000)
 ON DUPLICATE KEY UPDATE `title`=VALUES(`title`);
-

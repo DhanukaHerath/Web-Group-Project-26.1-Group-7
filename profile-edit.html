@@ -1,107 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Edit profile – Scriptorium</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="css/avatar.css" />
-    <link rel="stylesheet" href="css/pages.css" />
-
-    <script type="importmap">
-      {
-        "imports": {
-          "@humation/core": "./vendor/humation/core/index.js",
-          "@humation/assets-humation-1": "./vendor/humation/assets-humation-1/index.js",
-          "@humation/web-component": "./vendor/humation/web-component/index.js"
-        }
-      }
-    </script>
-  </head>
-
-  <body>
-    <header id="siteHeader"></header>
-
-    <main class="page">
-      <!-- Welcome message for the new users afte they signed up-->
-      <div class="welcome" id="welcome" hidden>
-        🎉 Account created! Design your Profile avatar below – you can change it
-        any time from this page.
-      </div>
-
-      <h1 class="page-title">Edit profile</h1>
-
-      <form id="editForm" class="edit-layout" novalidate>
-        <!-- Profile section-->
-        <!-- Humation editor (Left) -->
-        <section class="panel">
-          <h2>Your avatar</h2>
-
-          <div id="avatarPicker" class="avatar-picker"></div>
-        </section>
-
-        <!-- profile details (Right) -->
-        <section class="panel">
-          <h2>Details</h2>
-
-          <label
-            >Username
-            <input type="text" name="username" required minlength="2" />
-          </label>
-
-          <label
-            >Bio
-            <textarea
-              name="bio"
-              rows="4"
-              maxlength="240"
-              placeholder="Tell the community something about yourself"
-            ></textarea>
-          </label>
-
-          <!-- password changing (if needed) -->
-          <h3>Change password <small>(optional)</small></h3>
-
-          <label
-            >Current password
-            <input
-              type="password"
-              name="currentPassword"
-              autocomplete="current-password"
-            />
-          </label>
-
-          <label
-            >New password
-            <input
-              type="password"
-              name="newPassword"
-              autocomplete="new-password"
-              minlength="6"
-            />
-          </label>
-
-          <!-- form error -->
-          <p class="form-error" role="alert"></p>
-
-          <!-- buttons -->
-          <div class="profile-actions">
-            <button type="submit" class="btn-solid">Save changes</button>
-            <a href="profile.html" class="btn-outline">Cancel</a>
-          </div>
-        </section>
-      </form>
-    </main>
-
-    <script type="module" src="js/pages/profile-edit.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit profile – Scriptorium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/avatar.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script type="importmap">{"imports":{"@humation/core":"./vendor/humation/core/index.js","@humation/assets-humation-1":"./vendor/humation/assets-humation-1/index.js","@humation/web-component":"./vendor/humation/web-component/index.js"}}</script>
+</head>
+<body>
+  <header id="siteHeader"></header>
+  <main class="page">
+    <div class="welcome" id="welcome" hidden>🎉 Account created! Design your avatar below – you can change it any time from this page.</div>
+    <h1 class="page-title">Edit profile</h1>
+    <form id="editForm" class="edit-layout" novalidate>
+      <section class="panel">
+        <h2>Your avatar</h2>
+        <div id="avatarPicker" class="avatar-picker"></div>
+      </section>
+      <section class="panel">
+        <h2>Details</h2>
+        <label>Username<input type="text" name="username" required minlength="2"></label>
+        <label>Bio<textarea name="bio" rows="4" maxlength="240" placeholder="Tell the community about yourself"></textarea></label>
+        <h3>Change password <small>(optional)</small></h3>
+        <label>Current password<input type="password" name="currentPassword" autocomplete="current-password"></label>
+        <label>New password<input type="password" name="newPassword" autocomplete="new-password" minlength="6"></label>
+        <p class="form-error" role="alert"></p>
+        <div class="profile-actions">
+          <button type="submit" class="btn-solid">Save changes</button>
+          <a href="profile.html" class="btn-outline">Cancel</a>
+        </div>
+      </section>
+    </form>
+  </main>
+  <script type="module" src="js/pages/profile-edit.js"></script>
+</body>
 </html>

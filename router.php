@@ -1,10 +1,9 @@
 <?php
 // router.php – Unified Single-Port Development Server Router
-// Usage: php -S localhost:8000 router.php
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-
+// 1. Route API requests
 if (preg_match('#^/api/(.+)$#', $uri, $m)) {
     $script = __DIR__ . '/api/' . $m[1];
     if (file_exists($script) && is_file($script)) {
@@ -13,7 +12,7 @@ if (preg_match('#^/api/(.+)$#', $uri, $m)) {
     }
 }
 
-
+// 2. Route Uploads
 if (preg_match('#^/uploads/(.+)$#', $uri, $m)) {
     $file = __DIR__ . '/uploads/' . $m[1];
     if (file_exists($file) && is_file($file)) {
@@ -31,8 +30,8 @@ if (preg_match('#^/uploads/(.+)$#', $uri, $m)) {
     }
 }
 
-
-$frontendRoot = __DIR__ . '/scriptorium';
+// 3. Route Frontend files
+$frontendRoot = __DIR__;
 
 if ($uri === '/' || $uri === '') {
     $uri = '/index.html';
@@ -62,6 +61,6 @@ if (file_exists($target) && is_file($target)) {
     exit;
 }
 
-
+// Fallback: 404
 http_response_code(404);
 echo "404 Not Found: " . htmlspecialchars($uri);
