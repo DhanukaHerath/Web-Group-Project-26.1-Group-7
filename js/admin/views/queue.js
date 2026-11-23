@@ -43,12 +43,16 @@ export function render(container, ctx, status) {
 
   el.querySelector('#monthSel').addEventListener('change', e => { month = e.target.value; render(container, ctx, status); });
 
+  let busy = false;
   const approve = async id => {
+    if (busy) return;
+    busy = true;
     try {
       await reviewPost(id, ctx.user, { decision: 'approved' });
       toast('Approved – it is now in the gallery');
       ctx.refresh();
     } catch (x) { toast(x.message, 'error'); }
+    finally { busy = false; }
   };
   const reject = id => {
     const post = getPost(id);
@@ -60,8 +64,10 @@ export function render(container, ctx, status) {
     m.querySelector('textarea').focus();
     m.querySelector('#rejForm').addEventListener('submit', async e => {
       e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
       try { await reviewPost(id, ctx.user, { decision: 'disapproved', note: e.target.note.value }); closeModal(); toast('Disapproved – the creator was notified'); ctx.refresh(); }
-      catch (x) { e.target.querySelector('.form-error').textContent = x.message; }
+      catch (x) { e.target.querySelector('.form-error').textContent = x.message; btn.disabled = false; }
     });
   };
 

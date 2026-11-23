@@ -109,7 +109,9 @@ function addUserModal(ctx) {
     <p class="form-error" role="alert"></p><button type="submit" class="auth-submit">Create user</button></form>`);
   m.querySelector('#addForm').addEventListener('submit', async e => {
     e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
     try { await adminCreateUser(Object.fromEntries(new FormData(e.target))); closeModal(); toast('User created'); ctx.refresh(); }
-    catch (x) { e.target.querySelector('.form-error').textContent = x.message; }
+    catch (x) { e.target.querySelector('.form-error').textContent = x.message; btn.disabled = false; }
   });
 }

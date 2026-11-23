@@ -31,10 +31,12 @@ export function render(container, ctx) {
         <label>Description <small>(optional)</small><input type="text" name="description" maxlength="60" placeholder="Shown on the category card"></label>
         <p class="form-error" role="alert"></p><button type="submit" class="auth-submit">Add category</button></form>`);
       m.querySelector('input').focus();
-      m.querySelector('#catForm').addEventListener('submit', ev => {
+      m.querySelector('#catForm').addEventListener('submit', async ev => {
         ev.preventDefault();
-        try { addCategory(Object.fromEntries(new FormData(ev.target))); closeModal(); toast('Category added'); ctx.refresh(); }
-        catch (x) { ev.target.querySelector('.form-error').textContent = x.message; }
+        const btn = ev.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try { await addCategory(Object.fromEntries(new FormData(ev.target))); closeModal(); toast('Category added'); ctx.refresh(); }
+        catch (x) { ev.target.querySelector('.form-error').textContent = x.message; btn.disabled = false; }
       });
     }
     const del = e.target.closest('[data-del]');
@@ -42,7 +44,7 @@ export function render(container, ctx) {
       const c = getCategories().find(x => x.id === del.dataset.del), n = posts.filter(p => p.category === c.id).length;
       if (n) return toast(`${n} post${n === 1 ? '' : 's'} still use “${c.label}”, so it can't be removed.`, 'error');
       if (await confirmModal({ title: 'Remove category?', message: `“${esc(c.label)}” will no longer be available to members.`, confirmLabel: 'Remove', danger: true })) {
-        try { removeCategory(c.id, 0); toast('Category removed'); ctx.refresh(); } catch (x) { toast(x.message, 'error'); }
+        try { await removeCategory(c.id, 0); toast('Category removed'); ctx.refresh(); } catch (x) { toast(x.message, 'error'); }
       }
     }
   });

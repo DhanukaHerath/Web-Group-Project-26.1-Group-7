@@ -34,7 +34,10 @@ export function render(container, ctx) {
     const d = t('[data-del]');
     if (d) {
       const ev = getEvent(d.dataset.del), n = registrationsFor(ev.id).length;
-      if (await confirmModal({ title: 'Delete this?', message: `<b>${esc(ev.title)}</b>${n ? ` and its ${n} registration${n === 1 ? '' : 's'}` : ''} will be removed permanently.`, confirmLabel: 'Delete', danger: true })) { deleteEvent(ev.id); toast('Deleted'); ctx.refresh(); }
+      if (await confirmModal({ title: 'Delete this?', message: `<b>${esc(ev.title)}</b>${n ? ` and its ${n} registration${n === 1 ? '' : 's'}` : ''} will be removed permanently.`, confirmLabel: 'Delete', danger: true })) {
+        try { await deleteEvent(ev.id); toast('Deleted'); ctx.refresh(); }
+        catch (x) { toast(x.message, 'error'); }
+      }
     }
   });
 }
@@ -61,11 +64,13 @@ function eventForm(ev, ctx) {
   const form = m.querySelector('#evForm');
   const sync = () => { form.querySelector('[data-reg]').hidden = form.kind.value === 'Notice'; };
   form.kind.addEventListener('change', sync); sync();
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const d = Object.fromEntries(new FormData(form));
+    const btn = form.querySelector('button[type="submit"]');
     const data = { kind: d.kind, title: d.title, venue: d.venue, description: d.description, date: fromLocalInput(d.date), registerBy: fromLocalInput(d.registerBy) };
-    try { ev ? updateEvent(ev.id, data) : createEvent(data); closeModal(); toast(ev ? 'Saved' : 'Published'); ctx.refresh(); }
-    catch (x) { form.querySelector('.form-error').textContent = x.message; }
+    btn.disabled = true;
+    try { ev ? await updateEvent(ev.id, data) : await createEvent(data); closeModal(); toast(ev ? 'Saved' : 'Published'); ctx.refresh(); }
+    catch (x) { form.querySelector('.form-error').textContent = x.message; btn.disabled = false; }
   });
 }
