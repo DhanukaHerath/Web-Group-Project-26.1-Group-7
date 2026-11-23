@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gallery – Scriptorium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/avatar.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/gallery.css">
+  <script type="importmap">
+    {
+      "imports":{
+        "@humation/core":"./vendor/humation/core/index.js",
+        "@humation/assets-humation-1":"./vendor/humation/assets-humation-1/index.js",
+        "@humation/web-component":"./vendor/humation/web-component/index.js"
+      }
+    }
+  </script>
+</head>
+<body class="gal">
+  <header id="siteHeader"></header>
+  <main class="gal-page">
+    <div class="gal-top">
+      <h1>Gallery</h1>
+      <nav class="gal-tabs" role="tablist" id="galTabs">
+        <a href="#gallery" data-tab="gallery" role="tab">Gallery</a>
+        <a href="#poems" data-tab="poems" role="tab">Poems</a>
+        <a href="#explore" data-tab="explore" role="tab">Explore</a>
+      </nav>
+      <label class="gal-search"><input type="search" id="galSearch" placeholder="Search titles or artists…" aria-label="Search"></label>
+    </div>
+    <div id="galView"></div>
+  </main>
+  <script type="module" src="js/pages/gallery.js"></script>
+</body>
+</html>
