@@ -70,15 +70,17 @@ export function render(container, ctx) {
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const d = Object.fromEntries(new FormData(form)), isText = typeOf(category) === 'text';
+    const btn = form.querySelector('.post-btn');
     err.textContent = '';
     if (!d.title.trim()) return void (err.textContent = 'Please add a title.');
     if (isText) { if (d.text.trim().length < 10) return void (err.textContent = 'Please write something (at least a few words).'); }
     else { if (!image) return void (err.textContent = 'Please upload an image.'); if (!d.description.trim()) return void (err.textContent = 'Please add a description.'); }
+    btn.disabled = true;
     try {
       await addPost(ctx.user, { category, title: d.title, description: d.description, text: d.text, image: isText ? '' : image, file: isText ? null : imageFile });
       logActivity('post');
       toast('Submitted! An admin will review it soon.');
       render(container, ctx);                      // fresh form + updated submissions list
-    } catch (x) { err.textContent = x.message; }
+    } catch (x) { err.textContent = x.message; btn.disabled = false; }
   });
 }

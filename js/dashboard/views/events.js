@@ -54,13 +54,14 @@ function openRegistration(ev, ctx, done) {
       <p class="form-error" role="alert"></p>
       <button type="submit" class="auth-submit">Confirm Registration</button>
     </form>`);
-  m.querySelector('#regForm').addEventListener('submit', e => {
+  m.querySelector('#regForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const f = e.target, d = Object.fromEntries(new FormData(f)), err = f.querySelector('.form-error');
+    const f = e.target, d = Object.fromEntries(new FormData(f)), err = f.querySelector('.form-error'), btn = f.querySelector('button[type="submit"]');
     if ((d.fullName || '').trim().length < 2) return void (err.textContent = 'Please enter your full name.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email || '')) return void (err.textContent = 'Please enter a valid email address.');
     if (!d.faculty || !d.batch) return void (err.textContent = 'Please select your faculty and batch.');
-    try { registerForEvent(ev.id, u.id, d); closeModal(); toast(`Registered for ${ev.title}`); done(); }
-    catch (x) { err.textContent = x.message; }
+    btn.disabled = true;
+    try { await registerForEvent(ev.id, u.id, d); closeModal(); toast(`Registered for ${ev.title}`); done(); }
+    catch (x) { err.textContent = x.message; btn.disabled = false; }
   });
 }
