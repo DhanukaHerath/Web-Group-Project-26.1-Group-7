@@ -1,10 +1,12 @@
 <?php
+// Scriptorium Database Connection using PDO MySQL
+// Configurable for local XAMPP / WampServer / Production MySQL
 
-$dbHost = getenv('DB_HOST') ?: '127.0.0.1';
+$dbHost = getenv('DB_HOST') ?: 'sql311.infinityfree.com';
 $dbPort = getenv('DB_PORT') ?: '3306';
-$dbName = getenv('DB_NAME') ?: 'scriptorium';
-$dbUser = getenv('DB_USER') ?: 'root';
-$dbPass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$dbName = getenv('DB_NAME') ?: 'if0_43495513_scriptorium';
+$dbUser = getenv('DB_USER') ?: 'if0_43495513';
+$dbPass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '8OyDcUy9vxc3F';
 
 function getDBConnection() {
     global $dbHost, $dbPort, $dbName, $dbUser, $dbPass;
@@ -24,15 +26,17 @@ function getDBConnection() {
         $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
         return $pdo;
     } catch (PDOException $e) {
+        // If database doesn't exist yet, attempt connecting without dbname to offer auto-setup
         try {
             $rootDsn = "mysql:host={$dbHost};port={$dbPort};charset=utf8mb4";
             $rootPdo = new PDO($rootDsn, $dbUser, $dbPass, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]);
-
+            // Connected to MySQL server, but database 'scriptorium' might need to be created
             $rootPdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
             $rootPdo->exec("USE `{$dbName}`");
-
+            
+            // Reconnect to the newly created database
             $pdo = new PDO("mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4", $dbUser, $dbPass, [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
