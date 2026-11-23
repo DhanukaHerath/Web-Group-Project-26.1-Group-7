@@ -1,4 +1,6 @@
-
+/* login.js – glass Login / Register card (login.html). */
+import { login, register, currentUser, isAdmin } from '../core/auth.js';
+import { FACULTIES, BATCHES, optionsHTML } from '../core/options.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -20,6 +22,7 @@ function showForm(name) {
 }
 showForm(params.get('tab') === 'register' ? 'register' : 'login');
 
+/* delegated clicks: switch forms, show/hide password, forgot link */
 document.addEventListener('click', e => {
   const sw = e.target.closest('[data-switch]');
   if (sw) { e.preventDefault(); showForm(sw.dataset.switch); return; }
@@ -45,6 +48,5 @@ async function submit(form, action, onDone) {
   try { const u = await action(Object.fromEntries(new FormData(form))); onDone(u); }
   catch (err) { errEl.textContent = err.message; btn.disabled = false; }
 }
-
 forms.login.addEventListener('submit', e => { e.preventDefault(); submit(forms.login, login, u => location.href = isAdmin(u) ? 'admin.html' : (safeNext || 'dashboard.html')); });
 forms.register.addEventListener('submit', e => { e.preventDefault(); submit(forms.register, register, () => location.href = 'profile-edit.html?welcome=1'); });
