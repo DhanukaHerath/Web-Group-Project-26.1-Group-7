@@ -187,6 +187,15 @@ export function updateUser(id, patch) {
 
 /** Change username/bio, optionally password. Validates uniqueness. */
 export async function updateProfile(id, { username, bio, currentPassword, newPassword }) {
+  try {
+    const res = await apiRequest('users.php?action=profile', {
+      method: 'POST',
+      body: { username, bio, currentPassword, newPassword },
+    });
+    if (res?.user) return cacheUser(res.user);
+  } catch (err) {
+    if (err.status && err.status !== 404) throw err;
+  }
   const users = getUsers();
   const me = users.find(u => u.id === id);
   if (!me) throw new Error('User not found.');
@@ -200,6 +209,16 @@ export async function updateProfile(id, { username, bio, currentPassword, newPas
     patch.passwordHash = await hash(newPassword);
   }
   return updateUser(id, patch);
+}
+
+/** Save avatar state to MySQL (/api/users.php?action=avatar) and local cache. */
+export async function updateAvatar(id, avatar) {
+  try {
+    await apiRequest('users.php?action=avatar', { method: 'POST', body: { avatar } });
+  } catch (err) {
+    if (err.status && err.status !== 404) throw err;
+  }
+  return updateUser(id, { avatar });
 }
 
 /* ---------- admin operations ---------- */
