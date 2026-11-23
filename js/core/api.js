@@ -1,3 +1,4 @@
+/* api.js – small fetch wrapper for the PHP/MySQL backend (/api/*.php). */
 export const API_BASE = 'api';
 
 export async function apiRequest(endpoint, { method = 'GET', body = null } = {}) {
