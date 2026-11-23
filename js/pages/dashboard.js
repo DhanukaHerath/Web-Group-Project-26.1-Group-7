@@ -2,6 +2,9 @@
 import { requireLogin, syncAuth } from '../core/auth.js';
 import { syncPosts } from '../core/posts.js';
 import { syncSocial } from '../core/social.js';
+import { syncCategories } from '../core/categories.js';
+import { syncEvents } from '../core/events.js';
+import { syncNotifications } from '../core/notifications.js';
 import { logActivity } from '../core/activity.js';
 import { closeModal } from '../components/modal.js';
 import { renderShell } from '../dashboard/shell.js?v=2';
@@ -11,7 +14,7 @@ import { render as events } from '../dashboard/views/events.js';
 import { render as create } from '../dashboard/views/create.js';
 
 await syncAuth();
-await Promise.all([syncPosts(), syncSocial()]);
+await Promise.all([syncPosts(), syncSocial(), syncCategories(), syncEvents(), syncNotifications()]);
 const user = requireLogin();           // guests are sent to login.html
 if (user) {
   const ctx = { user, query: '', explore: { mode: 'category', cat: 'all', artist: null } };

@@ -5,13 +5,14 @@ import { avatarHTML } from '../humation/avatar-view.js';
 import { esc } from '../core/dom.js';
 import { featuredPosts, publicPosts, isTextCategory, authorOf, displayName, syncPosts } from '../core/posts.js';
 import { syncSocial } from '../core/social.js';
+import { syncCategories } from '../core/categories.js';
 import { openPostDetail } from '../components/post-card.js';
 import { logActivity } from '../core/activity.js';
 
 logActivity('view');
 
 initNav();
-await Promise.all([syncPosts(), syncSocial()]);
+await Promise.all([syncPosts(), syncSocial(), syncCategories()]);
 const user = currentUser();
 
 /* ---------- Gallery carousel: artworks the admin has featured ---------- */

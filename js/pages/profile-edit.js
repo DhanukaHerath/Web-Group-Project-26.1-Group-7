@@ -2,11 +2,12 @@
    The avatar can be changed here at any time; saving updates the user record
    so it is shown on the profile page, in the navbar and on poem cards. */
 import { initNav } from '../components/nav.js';
-import { requireLogin, updateProfile, updateUser } from '../core/auth.js';
+import { requireLogin, syncAuth, updateProfile, updateAvatar } from '../core/auth.js';
 import { resolveAvatar } from '../humation/avatar-state.js';
 import { createAvatarPicker } from '../humation/avatar-picker.js';
 import { toast, $ } from '../core/dom.js';
 
+await syncAuth();
 const user = requireLogin();
 if (user) {
   initNav();
@@ -31,7 +32,7 @@ if (user) {
     try {
       const data = Object.fromEntries(new FormData(form));
       await updateProfile(user.id, data);                 // username, bio, optional password
-      updateUser(user.id, { avatar: picker.getState() }); // avatar (parts + colours)
+      await updateAvatar(user.id, picker.getState());     // avatar (parts + colours)
       dirty = false;
       toast('Profile saved');
       setTimeout(() => { location.href = 'profile.html'; }, 600);

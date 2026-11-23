@@ -4,6 +4,7 @@ import { initNav } from '../components/nav.js';
 import { currentUser } from '../core/auth.js';
 import { publicPosts, getCategories, authorOf, displayName, isRealMember, syncPosts } from '../core/posts.js';
 import { likeCount, commentCount, isFollowing, followerCount, toggleFollow, syncSocial } from '../core/social.js';
+import { syncCategories } from '../core/categories.js';
 import { openPostDetail } from '../components/post-card.js';
 import { avatarHTML } from '../humation/avatar-view.js';
 import { logActivity } from '../core/activity.js';
@@ -93,7 +94,7 @@ function render() {
   document.querySelectorAll('#galTabs a').forEach(a => a.classList.toggle('active', a.dataset.tab === t));
   if (t === 'explore') explore(); else feed(t === 'poems' ? 'text' : 'image');
 }
-await Promise.all([syncPosts(), syncSocial()]);
+await Promise.all([syncPosts(), syncSocial(), syncCategories()]);
 render();
 window.addEventListener('hashchange', () => { closeModal(); st.cat = 'all'; render(); });
 window.addEventListener('social-change', () => { const y = scrollY; render(); scrollTo(0, y); });

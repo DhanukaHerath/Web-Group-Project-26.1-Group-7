@@ -2,6 +2,8 @@
 import { requireAdmin, syncAuth, syncUsers } from '../core/auth.js';
 import { syncPosts } from '../core/posts.js';
 import { syncSocial } from '../core/social.js';
+import { syncCategories } from '../core/categories.js';
+import { syncEvents } from '../core/events.js';
 import { logActivity } from '../core/activity.js';
 import { closeModal } from '../components/modal.js';
 import { renderShell, TITLES } from '../admin/shell.js';
@@ -14,7 +16,7 @@ import { render as events } from '../admin/views/events.js';
 import { render as reports } from '../admin/views/reports.js';
 
 await syncAuth();
-await Promise.all([syncUsers(), syncPosts(), syncSocial()]);
+await Promise.all([syncUsers(), syncPosts(), syncSocial(), syncCategories(), syncEvents()]);
 const user = requireAdmin();               // members → dashboard.html, guests → login.html
 if (user) {
   const ctx = { user, query: '' };
