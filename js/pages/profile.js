@@ -1,10 +1,8 @@
-// Imports
 import { initNav } from "../components/nav.js";
 import { currentUser, getUserById, logout } from "../core/auth.js";
 import { avatarHTML } from "../humation/avatar-view.js";
 import { esc, $ } from "../core/dom.js";
 
-// Set up the nav bar
 initNav();
 
 // checking who is logged right now
