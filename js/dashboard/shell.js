@@ -22,7 +22,7 @@ export const NAV = [
 ];
 
 /* simple brand mark: navy tile with an orange stroke */
-const LOGO = `<svg viewBox="0 0 72 72" class="brand-mark" aria-hidden="true"><rect width="72" height="72" rx="20" fill="#25356b"/><path d="M38 14c14 4 10 14 0 18 8 2 6 12-4 26" fill="none" stroke="#e8a13a" stroke-width="4" stroke-linecap="round"/><circle cx="40" cy="14" r="3" fill="#fff"/></svg>`;
+const LOGO = `<img src="images/logo.png" alt="Scriptorium logo" class="brand-mark" width="74" height="74">`;
 
 export function renderShell(app, ctx, { onSearch }) {
   const { user } = ctx;
