@@ -7,11 +7,13 @@ $pdo = getDBConnection();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
+// GET /api/auth.php?action=me
 if ($method === 'GET') {
     $user = getCurrentUser($pdo);
     jsonResponse(['user' => $user]);
 }
 
+// POST /api/auth.php?action=login | register | logout
 if ($method === 'POST') {
     $body = getJsonBody();
     if (empty($action) && isset($body['action'])) {
@@ -34,12 +36,13 @@ if ($method === 'POST') {
             errorResponse('Incorrect email or password.');
         }
 
-        
+        // Verify password using modern password_verify with SHA-256 fallback for compatibility
         $valid = password_verify($password, $user['password_hash']);
         if (!$valid) {
             $legacyHash = hash('sha256', 'scriptorium:' . $password);
             if ($user['password_hash'] === $legacyHash) {
                 $valid = true;
+                // Transparently upgrade to bcrypt
                 $newHash = password_hash($password, PASSWORD_DEFAULT);
                 $upStmt = $pdo->prepare("UPDATE `users` SET `password_hash` = ? WHERE `id` = ?");
                 $upStmt->execute([$newHash, $user['id']]);
@@ -91,6 +94,7 @@ if ($method === 'POST') {
         if (strlen($password) < 6) errorResponse('Password must be at least 6 characters.');
         if ($confirmPassword !== null && $password !== $confirmPassword) errorResponse('Passwords do not match.');
 
+        // Uniqueness check
         $stmt = $pdo->prepare("SELECT `id`, `email`, `username` FROM `users` WHERE `email` = ? OR LOWER(`username`) = LOWER(?) LIMIT 1");
         $stmt->execute([$email, $username]);
         $existing = $stmt->fetch();

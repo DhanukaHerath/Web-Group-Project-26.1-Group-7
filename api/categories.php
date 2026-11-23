@@ -1,5 +1,5 @@
 <?php
-// Category taxonomy management (public listing + admin CRUD)
+// categories.php – Category taxonomy management (public listing + admin CRUD)
 
 require_once __DIR__ . '/helpers.php';
 
@@ -33,13 +33,14 @@ if ($method === 'POST') {
         errorResponse('Invalid category identifier.');
     }
 
-
+    // Check duplicate
     $chk = $pdo->prepare("SELECT `id` FROM `categories` WHERE `id` = ? OR LOWER(`label`) = LOWER(?) LIMIT 1");
     $chk->execute([$id, $label]);
     if ($chk->fetch()) {
         errorResponse('A category with that name already exists.');
     }
 
+    // Compute plural
     $plural = $label;
     if (preg_match('/(s|phy)$/i', $label)) {
         $plural = $label;
@@ -62,6 +63,7 @@ if ($method === 'DELETE') {
     $id = $_GET['id'] ?? '';
     if (!$id) errorResponse('Category ID is required.');
 
+    // Count usage
     $chk = $pdo->prepare("SELECT COUNT(*) FROM `posts` WHERE `category` = ?");
     $chk->execute([$id]);
     $count = (int)$chk->fetchColumn();

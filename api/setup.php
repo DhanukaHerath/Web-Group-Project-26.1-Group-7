@@ -1,4 +1,6 @@
 <?php
+// setup.php – One-click automated database migrator and seeder
+// Run via CLI: php api/setup.php or open http://localhost/scriptorium/api/setup.php in browser
 
 require_once __DIR__ . '/config/cors.php';
 require_once __DIR__ . '/config/db.php';
@@ -15,9 +17,10 @@ if (!file_exists($sqlFile)) {
 $sql = file_get_contents($sqlFile);
 
 try {
-
+    // Execute multiple statements
     $pdo->exec($sql);
 
+    // Verify tables count
     $stmt = $pdo->query("SHOW TABLES");
     $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 

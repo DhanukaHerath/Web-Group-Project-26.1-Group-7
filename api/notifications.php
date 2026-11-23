@@ -1,5 +1,5 @@
-//Per-user alerts, moderation updates, and read states
 <?php
+// notifications.php – Per-user alerts, moderation updates, and read states
 
 require_once __DIR__ . '/helpers.php';
 

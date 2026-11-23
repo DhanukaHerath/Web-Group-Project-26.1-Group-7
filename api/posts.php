@@ -126,13 +126,15 @@ if ($method === 'GET') {
 
     jsonResponse($posts);
 }
-// Handle PATCH: Review decision (approve/disapprove) or toggle featured status
+
+// Handle POST / PATCH: Review decision (approve/disapprove) or toggle featured status
 $action = $_GET['action'] ?? '';
 if ($method === 'PATCH' || ($method === 'POST' && in_array($action, ['review', 'feature'], true))) {
     $admin = requireAdmin($pdo);
     $body = getJsonBody();
     $action = $action ?: ($body['action'] ?? '');
     $postId = $_GET['id'] ?? ($body['id'] ?? '');
+
     if (!$postId) errorResponse('Post ID is required.');
 
     $stmt = $pdo->prepare("SELECT * FROM `posts` WHERE `id` = ? LIMIT 1");

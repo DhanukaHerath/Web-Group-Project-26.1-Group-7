@@ -6,8 +6,9 @@ require_once __DIR__ . '/config/db.php';
 
 function initSession() {
     if (session_status() === PHP_SESSION_NONE) {
-       session_set_cookie_params([
-            'lifetime' => 86400 * 7, 
+        // Configure secure session cookies
+        session_set_cookie_params([
+            'lifetime' => 86400 * 7, // 7 days
             'path'     => '/',
             'httponly' => true,
             'samesite' => 'Lax'
@@ -62,12 +63,14 @@ function publicUser($user) {
     if (!$user) return null;
     unset($user['password_hash']);
     
+    // Parse avatar JSON if serialized
     if (!empty($user['avatar']) && is_string($user['avatar'])) {
         $parsed = json_decode($user['avatar'], true);
         if ($parsed) $user['avatar'] = $parsed;
     }
     
     $user['effectiveStatus'] = effectiveStatus($user);
+    // Align with frontend naming conventions
     $user['fullName'] = $user['full_name'] ?? $user['fullName'] ?? '';
     $user['createdAt'] = (int)($user['created_at'] ?? 0);
     $user['lastActiveAt'] = (int)($user['last_active_at'] ?? 0);
@@ -97,6 +100,7 @@ function getCurrentUser($pdo) {
         return null;
     }
 
+    // Touch heartbeat once a minute
     $now = nowMs();
     if ($now - (int)$user['last_active_at'] > 60000) {
         $upStmt = $pdo->prepare("UPDATE `users` SET `last_active_at` = ? WHERE `id` = ?");
@@ -137,6 +141,6 @@ function logActivityRecord($pdo, $type) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$today]);
     } catch (Exception $e) {
-
+        // Silently log or ignore in background
     }
 }
